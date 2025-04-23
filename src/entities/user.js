@@ -1,7 +1,7 @@
+const { ValidationError, UnauthorizedError, UseCaseError } = require('../infra/errors')
 const bcrypt = require('bcryptjs')
 const jwt = require('jsonwebtoken')
 require('dotenv').config()
-const { ValidationError, UnauthorizedError, UseCaseError } = require('../infra/errors')
 
 
 class User {
@@ -11,7 +11,7 @@ class User {
 
     constructor(obj) {
         if (!obj.id && !obj.email) 
-            throw new UseCaseError(`User instance requires an object with either an 'email' or an 'id' field in the constructor`)
+            throw new UseCaseError(`User requires object with either 'email' or 'id' field in the constructor`)
         this.id = obj.id?? null 
         this.email = obj.email? obj.email.toLowerCase(): null
         this.password = obj.password?? null
@@ -43,19 +43,37 @@ class User {
         try {
             return new User(jwt.verify(token, process.env.JWT_SECRET))
         } catch (e) {
-            throw new UnauthorizedError('JWT verification failed')
+            if (e.name === 'TokenExpiredError') throw new UnauthorizedError('JWT expired')
+            else throw new UnauthorizedError('JWT verification failed')
         }
     }
 
-    hasAttempts() { return this.numAttempts > 0 }
-    isValidated() { return this.status === User.#status.validated }
-    isUnvalidated() { return this.status === User.#status.unvalidated }
-    isRecoveringPassword() { return this.status === User.#status.recovery }
-    getJwt() { return jwt.sign({ email: this.email, id: this.id }, process.env.JWT_SECRET) }
-    login(password) { return bcrypt.compareSync(password, this.password) }
+    hasAttempts() { 
+        return this.numAttempts > 0 
+    }
+
+    isValidated() { 
+        return this.status === User.#status.validated 
+    }
+
+    isUnvalidated() { 
+        return this.status === User.#status.unvalidated 
+    }
+
+    isRecoveringPassword() { 
+        return this.status === User.#status.recovery 
+    }
+
+    login(password) { 
+        return bcrypt.compareSync(password, this.password) 
+    }
+
+    getJwt() { 
+        return jwt.sign({ email: this.email, id: this.id }, process.env.JWT_SECRET, { expiresIn: '15m' }) 
+    }
 
     validate(code) {
-        if (this.code !== code) {
+        if (this.code !== code && this.numAttempts > 0) {
             this.numAttempts -= 1
             const error = `Code is not valid, ${this.numAttempts} ${this.numAttempts == 1 ? 'attempt' : 'attempts'} left`
             throw new ValidationError(error)
@@ -92,7 +110,14 @@ class User {
 
     resetPassword(code, password) {
         if (password.length < 8) throw new ValidationError('Password must be 8 characters or longer')
-        this.validate(code)
+        if (!this.hasAttempts()) throw new UnauthorizedError('No attempts left, please make a new password recovery request')
+
+        try {
+            this.validate(code)
+        } catch (validateError) {
+            if (!this.hasAttempts()) throw new UnauthorizedError('No attempts left, please make a new password recovery request')
+            else throw validateError
+        }
         this.password = bcrypt.hashSync(password, 10)  
     }
 

@@ -14,9 +14,6 @@ async function passwordReset(req) {
 
     const user = await getUserByEmail(req.body.email)
 
-    if (!user.hasAttempts()) 
-        throw new UnauthorizedError('No attempts left, please make a new password recovery request')
-
     try {
         user.resetPassword(req.body.code, req.body.password)
     } catch(e) {
