@@ -38,7 +38,10 @@ class SuperDAO {
     }
 
     static #getColsAndVals(obj) {
-        let cols = Object.keys(obj).map(k => obj[k] != null? k : null).filter(k => k != null).sort()
+        let cols = Object.keys(obj)
+            .map(k => obj[k] != null? k : null)
+            .filter(k => k != null || k === 'updatedAt' || k === 'createdAt')
+            .sort()
         const idIdx = cols.findIndex(k => k === 'id') 
         if (idIdx != -1) cols.splice(idIdx, 1) 
         const vals = cols.map(c => obj[c]).concat(obj.id)

@@ -50,7 +50,7 @@ router.post('/password_recovery', async (req, res, next) => {
     await passwordRecovery(req).then(r => res.status(200).json(r)).catch(e => next(e))
 })
 
-router.post('/password_reset', async (req, res, next) => {
+router.put('/password_reset', async (req, res, next) => {
     await passwordReset(req).then(r => res.status(200).json(r)).catch(e => next(e))
 })
 

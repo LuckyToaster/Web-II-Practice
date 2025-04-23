@@ -6,8 +6,8 @@ const { ValidationError, UnauthorizedError, UseCaseError } = require('../infra/e
 
 class User {
     static #status = { validated: 'validated', unvalidated: 'unvalidated', recovery: 'recovery' }
-    static #emailRe = /^[^\s@]+@[^\s@]+\.[^\s@]+$/ 
     static #genCode = () => Array(6).fill(0).map(_ => Math.floor(Math.random() * 10)).join('')
+    static #emailRe = /^[^\s@]+@[^\s@]+\.[^\s@]+$/ 
 
     constructor(obj) {
         if (!obj.id && !obj.email) 
@@ -22,6 +22,8 @@ class User {
         this.status = obj.status?? null
         this.code = obj.code?? null
         this.numAttempts = obj.numAttempts ?? null 
+        this.createdAt = obj.createdAt ?? null
+        this.updatedAt = obj.updatedAt ?? null
     }
 
     static create(email, password) {
@@ -45,19 +47,12 @@ class User {
         }
     }
 
-    getJwt() { 
-        return jwt.sign({ email: this.email, id: this.id }, process.env.JWT_SECRET) 
-    }
-
-    // THE FOLLOWING METHODS MUST ONLY BE CALLED IF THE USER WAS INSTANTIATED WITH DAO DATA
     hasAttempts() { return this.numAttempts > 0 }
     isValidated() { return this.status === User.#status.validated }
     isUnvalidated() { return this.status === User.#status.unvalidated }
     isRecoveringPassword() { return this.status === User.#status.recovery }
-
-    login(password) { 
-        return bcrypt.compareSync(password, this.password) 
-    }
+    getJwt() { return jwt.sign({ email: this.email, id: this.id }, process.env.JWT_SECRET) }
+    login(password) { return bcrypt.compareSync(password, this.password) }
 
     validate(code) {
         if (this.code !== code) {
@@ -99,6 +94,13 @@ class User {
         if (password.length < 8) throw new ValidationError('Password must be 8 characters or longer')
         this.validate(code)
         this.password = bcrypt.hashSync(password, 10)  
+    }
+
+    masked() {
+        delete this.password
+        delete this.code
+        delete this.numAttempts
+        return this
     }
 }
 
