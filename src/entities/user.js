@@ -18,10 +18,12 @@ class User {
         this.name = obj.name?? null
         this.surname = obj.surname?? null
         this.nif = obj.nif?? null
+        this.companyId = obj.companyId ?? null
         this.role = obj.role?? null
         this.status = obj.status?? null
         this.code = obj.code?? null
-        this.numAttempts = obj.numAttempts ?? null 
+        this.numAttempts = obj.numAttempts ?? null
+        this.deleted = obj.deleted ?? null
         this.createdAt = obj.createdAt ?? null
         this.updatedAt = obj.updatedAt ?? null
     }
@@ -128,6 +130,10 @@ class User {
         delete this.code
         delete this.numAttempts
         return this
+    }
+
+    softDelete() {
+        this.deleted = true
     }
 }
 
