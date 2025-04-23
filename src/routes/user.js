@@ -1,12 +1,14 @@
 const { Router } = require("express")
 const { 
     register, 
-    validation, 
+    validate, 
     login, 
     onboarding, 
     getUserByJwt,
-    deleteUserByJwt
+    deleteUserByJwt,
+    passwordRecovery
 } = require('../use_cases/user')
+
 // store file url
 // store type mime
 // store size
@@ -24,7 +26,7 @@ router.post('/register', async (req, res, next) => {
 })
 
 router.put('/validation', async (req, res, next) => {
-    await validation(req)
+    await validate(req)
         .then(_ => res.status(200).send())
         .catch(e => next(e))
 })
@@ -53,7 +55,20 @@ router.get('/', async (req, res, next) => {
 
 router.delete('/', async (req, res, next) => {
     await deleteUserByJwt(req)
-        .then(r => res.status(200).send())
+        .then(_ => res.status(200).send())
+        .catch(e => next(e))
+})
+
+router.post('/password_recovery', async (req, res, next) => {
+    await passwordRecovery(req)
+        .then(r => res.status(200).json(r))
+        .catch(e => next(e))
+})
+
+
+router.post('/password_reset', async (req, res, next) => {
+    await passwordRecovery(req)
+        .then(r => res.status(200).json(r))
         .catch(e => next(e))
 })
 

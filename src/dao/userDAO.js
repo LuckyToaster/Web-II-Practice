@@ -23,7 +23,7 @@ class UserDAO extends SuperDAO {
             surname varchar(128), 
             nif char(9) unique, 
             role varchar(7), 
-            status bool, 
+            status varchar(11), 
             code char(6), 
             numAttempts int,
             createdAt timestamp DEFAULT CURRENT_TIMESTAMP,

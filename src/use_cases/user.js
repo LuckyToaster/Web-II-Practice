@@ -9,6 +9,8 @@ const {
 } = require('../infra/errors')
 
 
+// HELPER FUNCTIONS (used by various use cases)
+
 function getTokenFromAuthHeader(req) {
     const authHeader = req.get('Authorization')
     if (!authHeader) throw new UnauthorizedError('Request does not contain an "Authorization" header')
@@ -16,6 +18,7 @@ function getTokenFromAuthHeader(req) {
     if (!token) throw new UnauthorizedError('Request header does not contain an authorization token')
     return token
 }
+
 
 
 async function getByJwt(token) {
@@ -26,6 +29,8 @@ async function getByJwt(token) {
     return new User(data)
 }
 
+
+// USE CASE FUNCTIONS (one per use case)
 
 async function register(req) {
     if (!req.body.email) throw new ValidationError('Request body does not contain "email" field')
@@ -52,30 +57,21 @@ async function register(req) {
 }
 
 
-async function validation(req) {
-    if (!req.body.code) 
-        throw new ValidationError('Request body does not contain a "code" field')
-
+async function validate(req) {
+    if (!req.body.code) throw new ValidationError('Request body does not contain a "code" field')
     const token = getTokenFromAuthHeader(req)
     const user = await getByJwt(token)
+    if (user.isValidated()) throw new ValidationError('User already validated')
 
-    if (user.isValidated()) 
-        throw new ValidationError('User already validated')
-    else if (user.hasValidationCode(req.body.code)) {
-        user.validate()
-        await DAO.update(user).catch(e => { throw new InternalServerError(e.message) })
-    } else {
-        user.decrementNumAttempts()
+    if (user.hasAttempts()) {
         try {
-            if (!user.hasAttempts()) await DAO.delete(user)
-            else await DAO.update(user)
-        } catch (e) {
-            throw new InternalServerError(e.message)
+            user.validate(req.body.code) 
+        } catch(e) {
+            throw e
         } finally {
-            const errStr = `Code is not valid, ${user.numAttempts} validation ${user.numAttempts == 1 ? 'attempt' : 'attempts'} left`
-            throw new ValidationError(errStr)
+            await DAO.update(user).catch(e => { throw new InternalServerError(e.message) })
         }
-    }
+    } else await DAO.delete(user).catch(e => { throw new InternalServerError(e.message) })
 }
 
 
@@ -137,4 +133,27 @@ async function deleteUserByJwt(req) {
 }
 
 
-module.exports = { register, validation, login, onboarding, getUserByJwt, deleteUserByJwt }
+async function passwordRecovery(req) {
+    if (!req.body.email) throw new ValidationError('Request body does not contain an "email" field')
+    let user = new User({ email: req.body.email})
+    const data = await DAO.get(user).catch(e => { throw new InternalServerError(e.message) })
+    user = new User(data)
+
+}
+
+
+async function passwordReset(req) {
+
+}
+
+
+module.exports = { 
+    register, 
+    validate, 
+    login, 
+    onboarding, 
+    getUserByJwt, 
+    deleteUserByJwt,
+    passwordRecovery,
+    passwordReset
+}

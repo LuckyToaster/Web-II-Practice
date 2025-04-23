@@ -48,9 +48,9 @@ class ConflictError extends AppError {
     }
 }
 
-class BusinessError extends AppError {
+class UseCaseError extends AppError {
     constructor(message) {
-        super(message, 0, 'Business Error')
+        super(message, 500, 'Use Case Error')
     }
 }
 
@@ -63,5 +63,5 @@ module.exports = {
     ValidationError, 
     InternalServerError,
     ConflictError,
-    BusinessError
+    UseCaseError,
 }
