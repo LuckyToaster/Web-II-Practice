@@ -1,6 +1,7 @@
 class EmailService {
     constructor() {
-        if (EmailService._instance) throw new Error('EmailService is a singleton')
+        if (EmailService._instance) 
+            throw new Error('EmailService is a singleton')
         EmailService._instance = this
     }
 

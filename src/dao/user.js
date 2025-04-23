@@ -65,6 +65,7 @@ class UserDAO extends SuperDAO {
         return res
     }
 
+    // move this to superObj
     async getMetadata(obj) {
         if (obj.id) {
             const [res] = await DB.query('select createdAt, updatedAt from user where id = ?', [obj.id]) 

@@ -50,52 +50,49 @@ class User {
     }
 
     // THE FOLLOWING METHODS MUST ONLY BE CALLED IF THE USER WAS INSTANTIATED WITH DAO DATA
-    isValidated() { return this.status === User.#status.validated }
-    isRecoveringPassword() { return this.status === User.#status.recovery }
-    //validate() { this.status = 1 }
-    //decrementNumAttempts() { this.numAttempts -= 1 }
     hasAttempts() { return this.numAttempts > 0 }
-    //hasValidationCode(code) { return code === this.code }
-    login(password) { return bcrypt.compareSync(password, this.password) }
+    isValidated() { return this.status === User.#status.validated }
+    isUnvalidated() { return this.status === User.#status.unvalidated }
+    isRecoveringPassword() { return this.status === User.#status.recovery }
+
+    login(password) { 
+        return bcrypt.compareSync(password, this.password) 
+    }
 
     validate(code) {
         if (this.code !== code) {
             this.numAttempts -= 1
-            const error = `Code is not valid, ${this.numAttempts} validation ${this.numAttempts == 1 ? 'attempt' : 'attempts'} left`
+            const error = `Code is not valid, ${this.numAttempts} ${this.numAttempts == 1 ? 'attempt' : 'attempts'} left`
             throw new ValidationError(error)
         }
         this.status = User.#status.validated
     }
 
-    validateAndSetName(name) {
-        if (name.length > 128) throw new ValidationError('"name" must be less than 128 characters')
+    setName(name) {
+        if (name.length > 128 || name.length < 2) 
+            throw new ValidationError('"name" must be between 2 and 128 characters long')
         this.name = name
     }
 
-    validateAndSetSurname(surname) {
-        if (surname.length > 128) throw new ValidationError('"surname" must be less than 128 characters')
+    setSurname(surname) {
+        if (surname.length > 128 || surname.length < 2) 
+            throw new ValidationError('"surname" must be between 2 and 128 characters long')
         this.surname = surname 
     }
 
-    validateAndSetNIF(nif) {
+    setNif(nif) {
         if (nif.length != 9) throw new ValidationError('"nif" must be exactly 9 characters long')
         const correct = nif.slice(0, 8).split('').filter(n => isNaN(parseInt(n))) && isNaN(parseInt(nif[8]))
         if (!correct) throw new ValidationError('"nif" must be a valid nif')
         this.nif = nif
     }
 
-    recoverPassword(email, emailService) {
+    recoverPassword() {
         if (this.status === User.#status.unvalidated) 
             throw new ValidationError('Cannot begin password recovery process if the user is not yet validated')
-
         this.code = User.#genCode()
         this.status = User.#status.recovery
         this.numAttempts = 3
-
-        const msg = `Your password recovery code is: ${this.code}`
-        if (this.env.MODE === 'testing') emailService.sendMockEmail(email, msg)        
-        else if (this.env.MODE === 'production') emailService.sendEmail(email, msg)
-        else throw new UseCaseError(`Are you in 'testing' or 'production'? Please set MODE environment variable to either one of those`)
     }
 
     resetPassword(code, password) {

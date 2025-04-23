@@ -1,37 +1,16 @@
+/*
 const DAO = require('../dao/userDAO')
 const User = require('../entities/user')
 const { 
     InternalServerError, 
     ConflictError, 
-    NotFoundError, 
     UnauthorizedError, 
     ValidationError 
 } = require('../infra/errors')
+*/
 
 
-// HELPER FUNCTIONS (used by various use cases)
-
-function getTokenFromAuthHeader(req) {
-    const authHeader = req.get('Authorization')
-    if (!authHeader) throw new UnauthorizedError('Request does not contain an "Authorization" header')
-    const token = authHeader.split(' ')[1]
-    if (!token) throw new UnauthorizedError('Request header does not contain an authorization token')
-    return token
-}
-
-
-
-async function getByJwt(token) {
-    const user = User.verifyJwt(token)
-    const data = await DAO.get(user).catch(e => { throw new InternalServerError(e.message) })
-    const errStr = `User with id: ${user.id}, email: ${user.email} not found. (it was probably deleted manually or after validation failed)`
-    if (!data) throw new NotFoundError(errStr)
-    return new User(data)
-}
-
-
-// USE CASE FUNCTIONS (one per use case)
-
+/*
 async function register(req) {
     if (!req.body.email) throw new ValidationError('Request body does not contain "email" field')
     if (!req.body.password) throw new ValidationError('Request body does not contain "password" field')
@@ -55,13 +34,19 @@ async function register(req) {
         user: { email: user.email, role: user.role, status: user.status, id: user.id, code: user.code }
     }
 }
+*/
 
 
+    /*
 async function validate(req) {
-    if (!req.body.code) throw new ValidationError('Request body does not contain a "code" field')
+    if (!req.body.code) 
+        throw new ValidationError('Request body does not contain a "code" field')
+
     const token = getTokenFromAuthHeader(req)
-    const user = await getByJwt(token)
-    if (user.isValidated()) throw new ValidationError('User already validated')
+    const user = await getUserByJwt(token)
+
+    if (!user.isUnvalidated()) 
+        throw new ValidationError('User already validated')
 
     if (user.hasAttempts()) {
         try {
@@ -73,18 +58,17 @@ async function validate(req) {
         }
     } else await DAO.delete(user).catch(e => { throw new InternalServerError(e.message) })
 }
+*/
 
 
+    /*
 async function login(req) {
     if (!req.body.email) throw new ValidationError('Request body does not contain an "email" field')
     if (!req.body.password) throw new ValidationError('Request body does not contain a "password" field')
 
-    const query = new User({email: req.body.email})  
-    const data = await DAO.get(query).catch(e => { throw new InternalServerError(e.message) })
-    if (!data) throw new NotFoundError(`User with email: ${req.body.email} not found`)
+    const user = getUserByEmail(req.body.email)
 
-    const user = new User(data)
-    if (!user.isValidated()) throw new UnauthorizedError('User is not validated')
+    if (user.isUnvalidated()) throw new UnauthorizedError('User is not yet validated')
     if (!user.login(req.body.password)) throw new UnauthorizedError('Password is incorrect')
 
     return {
@@ -92,8 +76,10 @@ async function login(req) {
         user: { email: user.email, role: user.role, id: user.id, name: user.name }
     }
 }
+*/
 
 
+    /*
 async function onboarding(req) {
     const token = getTokenFromAuthHeader(req)
     const [name, surname, nif] = [ req.body.name, req.body.surname, req.body.nif ]
@@ -102,15 +88,17 @@ async function onboarding(req) {
     if (!surname) throw new ValidationError('Request body does not contain a "surname" field')
     if (!nif) throw new ValidationError('Request body does not contain a "nif" field')
 
-    const user = getByJwt(token)
+    const user = getUserByJwt(token)
 
     // and then what?
 }
+*/
 
 
-async function getUserByJwt(req) {
+    /*
+async function getByJwt(req) {
     const token = getTokenFromAuthHeader(req)
-    const user = await getByJwt(token)
+    const user = await getUserByJwt(token)
     const metadata = await DAO.getMetadata(user).catch(e => { throw new InternalServerError(e.message) })
     return {
         id: user.id,
@@ -124,26 +112,54 @@ async function getUserByJwt(req) {
         updatedAt: metadata.updatedAt
     }
 }
+*/
 
 
-async function deleteUserByJwt(req) {
+    /*
+async function deleteByJwt(req) {
     const token = getTokenFromAuthHeader(req)
-    const user = await getByJwt(token) // we must first make sure the user exists before deleting it
+    const user = await getUserByJwt(token) // we must first make sure the user exists before deleting it
     await DAO.delete(user)
 }
+*/
 
 
+    /*
 async function passwordRecovery(req) {
     if (!req.body.email) throw new ValidationError('Request body does not contain an "email" field')
-    let user = new User({ email: req.body.email})
-    const data = await DAO.get(user).catch(e => { throw new InternalServerError(e.message) })
-    user = new User(data)
 
+    const user = await getUserByEmail(req.body.email)
+    const updatedAt = await DAO.getMetadata(user)
+        .then(r => r.updatedAt)
+        .catch(e => { throw new InternalServerError(e.message) })
+
+    const minutesPassed = (new Date() - new Date(updatedAt)) / 60000
+    if (minutesPassed < 1)
+        throw new UnauthorizedError(`There is a one minute cooldown for password recovery, ${(1 - minutesPassed)} minutes remaining`)
+
+    user.recoverPassword()
+    await DAO.update(user).catch(e => { throw new InternalServerError(e.message) })
+
+    const msg = `Your password recovery code is: ${this.code}`
+    if (this.env.MODE === 'testing') emailService.sendMockEmail(this.email, msg)        
+    else if (this.env.MODE === 'production') emailService.sendEmail(this.email, msg)
+    else throw new UseCaseError(`Are you in 'testing' or 'production'? Please set MODE environment variable to either one of those`)
 }
+*/
 
 
+    /*
 async function passwordReset(req) {
+    if (!req.body.code) throw new ValidationError('Request body does not contain a "code" field')
+    if (!req.body.emaill) throw new ValidationError('Request body does not contain an "email" field')
+    if (!req.body.password) throw new ValidationError('Request body does not contain a "password" field')
 
+    const user = getUserByEmail(req.body.email)
+
+    if (!user.hasAttempts()) 
+        throw new AuthorizationError('No attempts left, please make a new password recovery request')
+
+    user.resetPassword(req.body.code, req.body.password)
 }
 
 
@@ -152,8 +168,9 @@ module.exports = {
     validate, 
     login, 
     onboarding, 
-    getUserByJwt, 
-    deleteUserByJwt,
+    getByJwt, 
+    deleteByJwt,
     passwordRecovery,
     passwordReset
 }
+*/

@@ -1,17 +1,12 @@
 const { Router } = require("express")
-const { 
-    register, 
-    validate, 
-    login, 
-    onboarding, 
-    getUserByJwt,
-    deleteUserByJwt,
-    passwordRecovery
-} = require('../use_cases/user')
-
-// store file url
-// store type mime
-// store size
+const register = require('../use_cases/user/register')
+const validate = require('../use_cases/user/validate')
+const login = require('../use_cases/user/login')
+const onboarding = require('../use_cases/user/onboarding')
+const getByJwt = require('../use_cases/user/getByJwt')
+const deleteByJwt = require('../use_cases/user/deleteByJwt')
+const passwordRecovery = require('../use_cases/user/passwordRecovery')
+const passwordReset = require('../use_cases/user/passwordReset')
 
 const router = new Router()
 
@@ -26,9 +21,7 @@ router.post('/register', async (req, res, next) => {
 })
 
 router.put('/validation', async (req, res, next) => {
-    await validate(req)
-        .then(_ => res.status(200).send())
-        .catch(e => next(e))
+    await validate(req).then(_ => res.status(200).send()).catch(e => next(e))
 })
 
 router.post('/login', async (req, res, next) => {
@@ -42,34 +35,23 @@ router.post('/login', async (req, res, next) => {
 })
 
 router.put('/register', async (req, res, next) => {
-    await onboarding(req)
-        .then(r => res.status(200).json(r))
-        .catch(e => next(e))
+    await onboarding(req).then(r => res.status(200).json(r)).catch(e => next(e))
 })
 
 router.get('/', async (req, res, next) => {
-    await getUserByJwt(req)
-        .then(r => res.status(200).json(r))
-        .catch(e => next(e))
+    await getByJwt(req).then(r => res.status(200).json(r)).catch(e => next(e))
 })
 
 router.delete('/', async (req, res, next) => {
-    await deleteUserByJwt(req)
-        .then(_ => res.status(200).send())
-        .catch(e => next(e))
+    await deleteByJwt(req).then(_ => res.status(200).send()).catch(e => next(e))
 })
 
 router.post('/password_recovery', async (req, res, next) => {
-    await passwordRecovery(req)
-        .then(r => res.status(200).json(r))
-        .catch(e => next(e))
+    await passwordRecovery(req).then(r => res.status(200).json(r)).catch(e => next(e))
 })
 
-
 router.post('/password_reset', async (req, res, next) => {
-    await passwordRecovery(req)
-        .then(r => res.status(200).json(r))
-        .catch(e => next(e))
+    await passwordReset(req).then(r => res.status(200).json(r)).catch(e => next(e))
 })
 
 module.exports = router
