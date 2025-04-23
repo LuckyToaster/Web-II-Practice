@@ -20,8 +20,6 @@ async function onboarding(req) {
     const data = await companyDAO.get(company).catch(e => { throw new InternalServerError(e.message) })
     if (data) throw new ConflictError('Company already exists')
 
-    console.log(user)
-
     company.setAddress(address).setPostalCode(postalCode).setCity(city).setProvince(province)
 
     if (user.nif === company.cif)
@@ -30,8 +28,6 @@ async function onboarding(req) {
 
     await companyDAO.insert(company).catch(e => { throw new InternalServerError(e.message) })
     company = await companyDAO.get(company).catch(e => { throw new InternalServerError(e.message) })
-
-    console.log(company)
 
     user.setCompanyId(company.id)
     await userDAO.update(user).catch(e => { throw new InternalServerError(e.message) })

@@ -1,4 +1,4 @@
-const SuperDAO = require('./superDAO')
+const SuperDAO = require('./super')
 const DB = require('../infra/db')
 
 

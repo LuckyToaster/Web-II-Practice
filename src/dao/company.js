@@ -1,5 +1,5 @@
 const DB = require('../infra/db')
-const SuperDAO = require('./superDAO')
+const SuperDAO = require('./super')
 
 
 class CompanyDAO extends SuperDAO {
