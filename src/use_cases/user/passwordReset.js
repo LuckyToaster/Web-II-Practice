@@ -2,7 +2,6 @@ const DAO = require('../../dao/user')
 const { 
     InternalServerError, 
     ValidationError,
-    UnauthorizedError
 } = require('../../infra/errors')
 const { getUserByEmail } = require('./helpers')
 

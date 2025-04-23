@@ -65,7 +65,9 @@ class User {
     }
 
     login(password) { 
-        return bcrypt.compareSync(password, this.password) 
+        if (this.isUnvalidated()) throw new UnauthorizedError('User is not yet validated')
+        if (this.isRecoveringPassword()) throw new UnauthorizedError('Cannot login while recovering password')
+        if (!bcrypt.compareSync(password, this.password)) throw new UnauthorizedError('Password is incorrect')
     }
 
     getJwt() { 
@@ -101,14 +103,14 @@ class User {
     }
 
     recoverPassword() {
-        if (this.status === User.#status.unvalidated) 
-            throw new ValidationError('Cannot begin password recovery process if the user is not yet validated')
+        if (this.isUnvalidated()) throw new ValidationError('Cannot begin password recovery process if the user is not yet validated')
         this.code = User.#genCode()
         this.status = User.#status.recovery
         this.numAttempts = 3
     }
 
     resetPassword(code, password) {
+        if (!this.isRecoveringPassword()) throw new UnauthorizedError('User is not in password recovery process')
         if (password.length < 8) throw new ValidationError('Password must be 8 characters or longer')
         if (!this.hasAttempts()) throw new UnauthorizedError('No attempts left, please make a new password recovery request')
 

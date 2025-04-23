@@ -1,5 +1,5 @@
 const { getUserByEmail } = require('./helpers')
-const { UnauthorizedError, ValidationError } = require('../../infra/errors')
+const { ValidationError } = require('../../infra/errors')
 
 
 async function login(req) {
@@ -7,9 +7,7 @@ async function login(req) {
     if (!req.body.password) throw new ValidationError('Request body does not contain a "password" field')
 
     const user = await getUserByEmail(req.body.email)
-
-    if (user.isUnvalidated()) throw new UnauthorizedError('User is not yet validated')
-    if (!user.login(req.body.password)) throw new UnauthorizedError('Password is incorrect')
+    user.login(req.body.password)
 
     return {
         token: user.getJwt(), 

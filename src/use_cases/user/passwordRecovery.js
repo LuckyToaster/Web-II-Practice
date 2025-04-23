@@ -8,21 +8,15 @@ const {
 } = require('../../infra/errors')
 const { getUserByEmail } = require('./helpers')
 
-const cooldownErr = (mins) => {
-    const secs = ((1 - mins) * 60).toFixed(2)
-    return `There is a one minute cooldown for password recovery, ${secs} minutes remaining`
-}
+const cooldownErr = (secs) => `There is a one minute cooldown for password recovery, ${60 - secs} seconds remaining`
 
 
 async function passwordRecovery(req) {
     if (!req.body.email) throw new ValidationError('Request body does not contain an "email" field')
 
     const user = await getUserByEmail(req.body.email)
-    const minsPassed = await DAO.getMetadata(user)
-        .then(r => (new Date() - new Date(r.updatedAt)) / 60000)
-        .catch(e => { throw new InternalServerError(e.message) })
-
-    if (minsPassed < 1) throw new UnauthorizedError(cooldownErr(minsPassed))
+    const secsPassed = (new Date() - new Date(user.updatedAt)) / 1000
+    if (secsPassed < 60) throw new UnauthorizedError(cooldownErr(secsPassed))
 
     user.recoverPassword()
     await DAO.update(user).catch(e => { throw new InternalServerError(e.message) })
