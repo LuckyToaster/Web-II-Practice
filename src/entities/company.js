@@ -37,11 +37,10 @@ class Company {
         return this
     }
 
-
     setPostalCode(postalCode) {
-        if (postalCode.length > 128 || postalCode.length < 2) 
-            throw new ValidationError('Company postalCode must be between 2 and 128 characters long')
-        this.postalCode = address
+        if (typeof postalCode !== 'number') 
+            throw new ValidationError('Company postalCode must be an integer')
+        this.postalCode = postalCode
         return this
     }
 
