@@ -8,7 +8,7 @@ const {
 } = require('../../infra/errors')
 const { getUserByEmail } = require('./helpers')
 
-const cooldownErr = (secs) => `There is a one minute cooldown for password recovery, ${60 - secs} seconds remaining`
+const cooldownErr = (secs) => `There is a one minute cooldown for password recovery, ${(60 - secs).toFixed()} seconds remaining`
 
 
 async function passwordRecovery(req) {

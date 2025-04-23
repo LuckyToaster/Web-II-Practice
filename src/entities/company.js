@@ -1,4 +1,4 @@
-const { UseCaseError, ValidationError } = require('../../infra/errors')
+const { UseCaseError, ValidationError } = require('../infra/errors')
 
 
 class Company {
@@ -17,9 +17,9 @@ class Company {
     }
 
     setCif(cif) {
-        if (address.length > 128 || address.length < 2) 
+        if (cif.length > 128 || cif.length < 2) 
             throw new ValidationError('Company address must be between 2 and 128 characters long')
-        this.address = address
+        this.cif = cif
         return this
     }
     
@@ -47,7 +47,7 @@ class Company {
     setCity(city) {
         if (city.length > 128 || city.length < 2) 
             throw new ValidationError('Company city must be between 2 and 128 characters long')
-        this.city = address
+        this.city = city
         return this
     }
 

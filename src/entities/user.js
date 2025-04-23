@@ -76,14 +76,6 @@ class User {
         return jwt.sign({ email: this.email, id: this.id }, process.env.JWT_SECRET, { expiresIn: '15m' }) 
     }
 
-    validate(code) {
-        if (this.code !== code && this.numAttempts > 0) {
-            this.numAttempts -= 1
-            const error = `Code is not valid, ${this.numAttempts} ${this.numAttempts == 1 ? 'attempt' : 'attempts'} left`
-            throw new ValidationError(error)
-        }
-        this.status = User.#status.validated
-    }
 
     setName(name) {
         if (name.length > 128 || name.length < 2) 
@@ -109,6 +101,25 @@ class User {
         this.companyId = id
     }
 
+    #validateCode(code) {
+        if (this.code !== code) {
+            this.numAttempts -= 1
+            const error = `Code is not valid, ${this.numAttempts} ${this.numAttempts == 1 ? 'attempt' : 'attempts'} left`
+            throw new ValidationError(error)
+        }
+        this.status = User.#status.validated
+    }
+
+    validate(code) {
+        if (!this.isUnvalidated()) throw new UnauthorizedError('User is not in validation process')
+        try {
+            this.#validateCode(code)
+        } catch (validateError) {
+            if (!this.hasAttempts()) throw new UnauthorizedError('No validation attempts left')
+            else throw validateError
+        }
+    }
+
     recoverPassword() {
         if (this.isUnvalidated()) throw new ValidationError('Cannot begin password recovery process if the user is not yet validated')
         this.code = User.#genCode()
@@ -119,10 +130,8 @@ class User {
     resetPassword(code, password) {
         if (!this.isRecoveringPassword()) throw new UnauthorizedError('User is not in password recovery process')
         if (password.length < 8) throw new ValidationError('Password must be 8 characters or longer')
-        if (!this.hasAttempts()) throw new UnauthorizedError('No attempts left, please make a new password recovery request')
-
         try {
-            this.validate(code)
+            this.#validateCode(code)
         } catch (validateError) {
             if (!this.hasAttempts()) throw new UnauthorizedError('No attempts left, please make a new password recovery request')
             else throw validateError

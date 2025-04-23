@@ -34,8 +34,8 @@ router.post('/login', async (req, res, next) => {
     }
 })
 
-router.put('/register', async (req, res, next) => {
-    await onboarding(req).then(r => res.status(200).json(r)).catch(e => next(e))
+router.post('/onboarding', async (req, res, next) => {
+    await onboarding(req).then(_ => res.status(200).json(r)).catch(e => next(e))
 })
 
 router.get('/', async (req, res, next) => {

@@ -1,8 +1,8 @@
 const SuperDAO = require('./superDAO')
 const DB = require('../infra/db')
 
-class UserDAO extends SuperDAO {
 
+class UserDAO extends SuperDAO {
     constructor() {
         super()
         if (UserDAO._instance) throw new Error('UserDAO is a singleton')
@@ -10,29 +10,27 @@ class UserDAO extends SuperDAO {
         this.#createTableIfNotExists()
     }
 
-    #getById = async (id) => (await DB.query('select * from user where id = ?', [id]))[0][0]
-    #getByEmail = async (email) => (await DB.query('select * from user where email = ?', [email]))[0][0]
-    #deleteById = async (id) => (await DB.query("delete from user where id = ?", [id]))[0][0]
-    #deleteByEmail = async (email) => (await DB.query("delete FROM user where email = ?", [email]))[0][0]
-    #createTableIfNotExists = async () => await DB.query(
-        `CREATE TABLE IF NOT EXISTS user (
-            id int auto_increment primary key, 
-            email varchar(128) unique not null,
-            password char(60) not null,
-            nif char(9) unique, 
-            name varchar(128), 
-            surname varchar(128), 
-            role varchar(7), 
-            status varchar(11), 
-            code char(6), 
-            numAttempts int,
-            deleted bool,
-            createdAt timestamp DEFAULT CURRENT_TIMESTAMP,
-            updatedAt timestamp DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-            companyId int, 
-            foreign key (companyId) references company(id) on delete set null on update cascade
-        )`
-    )
+    async #createTableIfNotExists() {
+        await DB.query(
+            `CREATE TABLE IF NOT EXISTS user (
+                id int auto_increment primary key, 
+                email varchar(128) unique not null,
+                password char(60) not null,
+                nif char(9) unique, 
+                name varchar(128), 
+                surname varchar(128), 
+                role varchar(7), 
+                status varchar(11), 
+                code char(6), 
+                numAttempts int,
+                deleted bool,
+                createdAt timestamp DEFAULT CURRENT_TIMESTAMP,
+                updatedAt timestamp DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+                companyId int, 
+                foreign key (companyId) references company(id) on delete set null on update cascade
+            )`
+        )
+    }
 
     async getAll() {
         const [res] = await DB.query("select * from user")
@@ -42,7 +40,7 @@ class UserDAO extends SuperDAO {
     async get(obj) { 
         if (obj.id) return await this.#getById(obj.id)
         if (obj.email) return await this.#getByEmail(obj.email)
-        const [query, vals] = this.getSelectQueryData(obj, 'company')
+        const [query, vals] = this.getSelectQueryData(obj, 'user')
         const [res] = await DB.query(query, vals)
         return res
     }
@@ -50,23 +48,28 @@ class UserDAO extends SuperDAO {
     async delete(obj) {
         if (obj.id) return await this.#deleteById(obj.id) 
         if (obj.email) return await this.#deleteByEmail(obj.email)
-        const [query, vals] = this.getDeleteQueryData(obj, 'company')
+        const [query, vals] = this.getDeleteQueryData(obj, 'user')
         const [res] = await DB.query(query, vals)
         return res
     }
 
     async update(obj) { 
-        const [query, vals] = this.getUpdateQueryData(obj, 'company')
+        const [query, vals] = this.getUpdateQueryData(obj, 'user')
         const [res] = await DB.query(query, vals)
         return res
     }
 
     async insert(obj) {
-        const [query, vals] = this.getInsertQueryData(obj, 'commpany')
+        const [query, vals] = this.getInsertQueryData(obj, 'user')
         vals.pop() // no need for 'id' value since its an insert
         const [res] = await DB.query(query, vals)
         return res
     }
+
+    #getById = async (id) => (await DB.query('select * from user where id = ?', [id]))[0][0]
+    #getByEmail = async (email) => (await DB.query('select * from user where email = ?', [email]))[0][0]
+    #deleteById = async (id) => (await DB.query("delete from user where id = ?", [id]))[0][0]
+    #deleteByEmail = async (email) => (await DB.query("delete FROM user where email = ?", [email]))[0][0]
 }
 
 

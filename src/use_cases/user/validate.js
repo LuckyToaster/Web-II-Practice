@@ -10,18 +10,15 @@ async function validate(req) {
     const token = getTokenFromAuthHeader(req)
     const user = await getUserByJwt(token)
 
-    if (!user.isUnvalidated()) 
-        throw new ValidationError('User already validated')
-
-    if (user.hasAttempts()) {
-        try {
-            user.validate(req.body.code) 
-        } catch(e) {
-            throw e
-        } finally {
-            await userDAO.update(user).catch(e => { throw new InternalServerError(e.message) })
-        }
-    } else await userDAO.delete(user).catch(e => { throw new InternalServerError(e.message) })
+    try {
+        user.validate(req.body.code)
+    } catch (validationError) {
+        if (!user.hasAttempts())
+            await userDAO.delete(user).catch(e => { throw new InternalServerError(e.message) })
+        throw validationError
+    } finally {
+        await userDAO.update(user).catch(e => { throw new InternalServerError(e.message) })
+    }
 }
 
 
