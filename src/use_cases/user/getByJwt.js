@@ -1,4 +1,3 @@
-const DAO = require('../../dao/user')
 const { getUserByJwt, getTokenFromAuthHeader } = require('./helpers')
 
 async function getByJwt(req) {

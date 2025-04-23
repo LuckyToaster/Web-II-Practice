@@ -1,4 +1,4 @@
-const DAO = require('../../dao/user')
+const { userDAO } = require('../../dao')
 const EMAIL_SERVICE = require('../../infra/email')
 const { 
     InternalServerError, 
@@ -19,7 +19,7 @@ async function passwordRecovery(req) {
     if (secsPassed < 60) throw new UnauthorizedError(cooldownErr(secsPassed))
 
     user.recoverPassword()
-    await DAO.update(user).catch(e => { throw new InternalServerError(e.message) })
+    await userDAO.update(user).catch(e => { throw new InternalServerError(e.message) })
     const msg = `Your password recovery code is: ${user.code}`
 
     if (process.env.MODE === 'testing') EMAIL_SERVICE.sendMockEmail(user.email, msg)        

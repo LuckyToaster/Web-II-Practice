@@ -19,8 +19,10 @@ class CompanyDAO extends SuperDAO {
             id int auto_increment primary key, 
             cif char(9) unique,
             name varchar(128),
-            address varchar(256),
+            address varchar(128),
             postalCode int,
+            city varchar(128),
+            province varchar(128),
             createdAt timestamp DEFAULT CURRENT_TIMESTAMP,
             updatedAt timestamp DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
         )`

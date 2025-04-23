@@ -1,4 +1,4 @@
-const DAO = require('../../dao/user')
+const { userDAO } = require('../../dao')
 const User = require('../../entities/user')
 const { 
     InternalServerError, 
@@ -12,7 +12,7 @@ async function register(req) {
     if (!req.body.password) throw new ValidationError('Request body does not contain "password" field')
 
     const query = new User({ email: req.body.email })
-    const data = await DAO.get(query).catch(e => { throw new InternalServerError(e.message) })
+    const data = await userDAO.get(query).catch(e => { throw new InternalServerError(e.message) })
 
     let user = null
     if (data) {
@@ -21,8 +21,8 @@ async function register(req) {
             throw new ConflictError('Cannot attempt registration with an already validated email')
     } else {
         user = User.create(query.email, req.body.password)
-        await DAO.insert(user).catch(e => { throw new InternalServerError(e.message) })
-        user = new User(await DAO.get(user))
+        await userDAO.insert(user).catch(e => { throw new InternalServerError(e.message) })
+        user = new User(await userDAO.get(user))
     }
 
     return {

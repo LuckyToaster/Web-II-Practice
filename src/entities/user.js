@@ -104,6 +104,11 @@ class User {
         this.nif = nif
     }
 
+    setCompanyId(id) {
+        if (typeof id !== 'number') throw new UseCaseError('Please make sure you are passing an id')
+        this.companyId = id
+    }
+
     recoverPassword() {
         if (this.isUnvalidated()) throw new ValidationError('Cannot begin password recovery process if the user is not yet validated')
         this.code = User.#genCode()

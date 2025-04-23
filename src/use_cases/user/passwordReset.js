@@ -1,4 +1,4 @@
-const DAO = require('../../dao/user')
+const { userDAO } = require('../../dao')
 const { 
     InternalServerError, 
     ValidationError,
@@ -18,7 +18,7 @@ async function passwordReset(req) {
     } catch(e) {
         throw e
     } finally {
-        await DAO.update(user).catch(e => { throw new InternalServerError(e.message) })
+        await userDAO.update(user).catch(e => { throw new InternalServerError(e.message) })
     }
 }
 

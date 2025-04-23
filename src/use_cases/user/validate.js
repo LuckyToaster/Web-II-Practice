@@ -1,4 +1,4 @@
-const DAO = require('../../dao/user')
+const { userDAO } = require('../../dao')
 const { InternalServerError, ValidationError } = require('../../infra/errors')
 const { getTokenFromAuthHeader, getUserByJwt } = require('./helpers')
 
@@ -19,9 +19,9 @@ async function validate(req) {
         } catch(e) {
             throw e
         } finally {
-            await DAO.update(user).catch(e => { throw new InternalServerError(e.message) })
+            await userDAO.update(user).catch(e => { throw new InternalServerError(e.message) })
         }
-    } else await DAO.delete(user).catch(e => { throw new InternalServerError(e.message) })
+    } else await userDAO.delete(user).catch(e => { throw new InternalServerError(e.message) })
 }
 
 
