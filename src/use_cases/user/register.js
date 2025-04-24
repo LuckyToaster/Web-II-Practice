@@ -26,7 +26,7 @@ async function register(req) {
     }
 
     return {
-        token: user.getJwt(false),
+        token: user.getJwt(),
         user: { 
             email: user.email, 
             role: user.role, 

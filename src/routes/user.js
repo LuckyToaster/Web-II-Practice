@@ -61,7 +61,7 @@ router.put('/password_reset', async (req, res, next) => {
     await passwordReset(req).then(r => res.status(200).json(r)).catch(e => next(e))
 })
 
-router.patch('/logo', upload.single('pfp'), async (req, res, next) => {
+router.patch('/pfp', upload.single('pfp'), async (req, res, next) => {
     await pfp(req)//.then(_ => res.status(201).send()).catch(e => next(e))
     res.status(200).send()
 })
