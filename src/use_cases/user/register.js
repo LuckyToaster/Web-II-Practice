@@ -1,6 +1,7 @@
 const { userDAO } = require('../../dao')
 const User = require('../../entities/user')
 const { ValidationError, ConflictError } = require('../../infra/errors')
+const emailService = require('../../infra/email')
 
 
 async function register(reqBody) {
@@ -21,7 +22,22 @@ async function register(reqBody) {
         user = new User(await userDAO.get(user))
     }
 
-    return { token: user.getJwt(), user }
+    const msg = `Your validation code is: ${user.code}`
+    const err = 'Are you in "testing" or "production"? Please set MODE environment variable to either one of those'
+
+    if (process.env.MODE === 'testing') emailService.sendMockEmail(user.email, msg)    
+    else if (process.env.MODE === 'production') emailService.sendEmail(user.email, msg)
+    else throw new UseCaseError(err)
+
+    return { 
+        token: user.getJwt(), 
+        user: { 
+            email: user.email, 
+            status: user.status, 
+            role: user.role, 
+            id: user.id 
+        }
+    }
 }
 
 

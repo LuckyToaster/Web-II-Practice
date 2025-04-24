@@ -24,6 +24,7 @@ class User {
         this.code = obj.code?? null
         this.numAttempts = obj.numAttempts ?? null
         this.deleted = obj.deleted ?? null
+        this.pfpUrl = obj.pfpUrl ?? null
         this.createdAt = obj.createdAt ?? null
         this.updatedAt = obj.updatedAt ?? null
     }
@@ -153,6 +154,8 @@ class User {
     softDelete() {
         this.deleted = true
     }
+
+
 }
 
 

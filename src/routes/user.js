@@ -42,7 +42,7 @@ router.post('/login', async (req, res, next) => {
 })
 
 router.patch('/onboarding', async (req, res, next) => {
-    await onboarding(req).then(_ => res.status(200).json(r)).catch(e => next(e))
+    await onboarding(req).then(_ => res.status(200).send()).catch(e => next(e))
 })
 
 router.get('/', async (req, res, next) => {

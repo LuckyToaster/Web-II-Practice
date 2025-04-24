@@ -1,6 +1,6 @@
-const { userDAO } = require('../../dao')
-const EMAIL_SERVICE = require('../../infra/email')
 const { ValidationError, UnauthorizedError, UseCaseError } = require('../../infra/errors')
+const emailService = require('../../infra/email')
+const { userDAO } = require('../../dao')
 const { getUserByEmail } = require('./helpers')
 
 const cooldownErr = (secs) => `There is a one minute cooldown for password recovery, ${(60 - secs).toFixed()} seconds remaining`
@@ -17,8 +17,8 @@ async function passwordRecovery(req) {
     await userDAO.update(user)
     const msg = `Your password recovery code is: ${user.code}`
 
-    if (process.env.MODE === 'testing') EMAIL_SERVICE.sendMockEmail(user.email, msg)        
-    else if (process.env.MODE === 'production') EMAIL_SERVICE.sendEmail(user.email, msg)
+    if (process.env.MODE === 'testing') emailService.sendMockEmail(user.email, msg)        
+    else if (process.env.MODE === 'production') emailService.sendEmail(user.email, msg)
     else throw new UseCaseError('Are you in "testing" or "production"? Please set MODE environment variable to either one of those')
 }
 
