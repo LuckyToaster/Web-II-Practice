@@ -4,12 +4,18 @@ const { ValidationError } = require('../../infra/errors')
 
 async function pfp(req) {
     if (!req.file) throw new ValidationError('Request does not contain an image file')
+
+    const mimes = [ 'image/jpeg', 'image/png', 'image/webp' ]
+
+    if (!mimes.includes(mimetype)) 
+        res.status(415).send(`${mimetype} not supported (please give .pdf or .docx`)
+
     const token = await getTokenFromAuthHeader(req)
     const user = await getUserByJwt(token)
-    
-    console.log(req.file.filename)
-    console.log(req.file.mimetype)
-    //user.setPfpUrl(req.filename)
+
+    user.pfpUrl = req.file.filename
+
+    await userDAO.update(user)    
 }
 
 module.exports = pfp

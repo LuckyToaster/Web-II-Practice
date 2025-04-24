@@ -1,4 +1,6 @@
 const { Router } = require("express")
+const multer = require('multer')
+
 const register = require('../use_cases/user/register')
 const validate = require('../use_cases/user/validate')
 const login = require('../use_cases/user/login')
@@ -9,9 +11,8 @@ const passwordRecovery = require('../use_cases/user/passwordRecovery')
 const passwordReset = require('../use_cases/user/passwordReset')
 const pfp = require('../use_cases/user/pfp')
 
-const multer = require('multer')
 const upload = multer({ 
-    dest: '../../uploads', 
+    dest: __dirname + '../uploads',
     limits: { fileSize: 1048576 } // 1MB
 })
 
@@ -62,8 +63,7 @@ router.put('/password_reset', async (req, res, next) => {
 })
 
 router.patch('/pfp', upload.single('pfp'), async (req, res, next) => {
-    await pfp(req)//.then(_ => res.status(201).send()).catch(e => next(e))
-    res.status(200).send()
+    await pfp(req).then(_ => res.status(201).send()).catch(e => next(e))
 })
 
 module.exports = router

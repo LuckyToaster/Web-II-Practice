@@ -154,8 +154,6 @@ class User {
     softDelete() {
         this.deleted = true
     }
-
-
 }
 
 
