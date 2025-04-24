@@ -19,7 +19,7 @@ const router = new Router()
 
 router.post('/register', async (req, res, next) => {
     try {
-        const r = await register(req)
+        const r = await register(req.body)
         res.set('Authorization', `Bearer ${r.token}`)
         res.status(201).json(r)
     } catch (e) {

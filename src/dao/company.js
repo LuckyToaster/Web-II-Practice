@@ -1,3 +1,4 @@
+const { InternalServerError } = require('../infra/errors')
 const DB = require('../infra/db')
 const SuperDAO = require('./super')
 
@@ -28,37 +29,57 @@ class CompanyDAO extends SuperDAO {
     }
 
     async getAll() {
-        const [res] = await DB.query("select * from company")
-        return res
+        try {
+            const [res] = await DB.query("select * from company")
+            return res
+        } catch (e) {
+            throw new InternalServerError(e.message)
+        }
     }
 
     async get(obj) { 
-        if (obj.id) return await this.#getById(obj.id)
-        if (obj.cif) return await this.#getByCif(obj.cif)
-        const [query, vals] = this.getSelectQueryData(obj, 'company')
-        const [res] = await DB.query(query, vals)
-        return res
+        try {
+            if (obj.id) return await this.#getById(obj.id)
+            if (obj.cif) return await this.#getByCif(obj.cif)
+            const [query, vals] = this.getSelectQueryData(obj, 'company')
+            const [res] = await DB.query(query, vals)
+            return res
+        } catch (e) {
+            throw new InternalServerError(e.message)
+        }
     }
 
     async delete(obj) {
-        if (obj.id) return await this.#deleteById(obj.id) 
-        if (obj.cif) return await this.#deleteByCif(obj.cif)
-        const [query, vals] = this.getDeleteQueryData(obj, 'company')
-        const [res] = await DB.query(query, vals)
-        return res
+        try {
+            if (obj.id) return await this.#deleteById(obj.id) 
+            if (obj.cif) return await this.#deleteByCif(obj.cif)
+            const [query, vals] = this.getDeleteQueryData(obj, 'company')
+            const [res] = await DB.query(query, vals)
+            return res
+        } catch (e) {
+            throw new InternalServerError(e.message)
+        }
     }
 
     async update(obj) { 
-        const [query, vals] = this.getUpdateQueryData(obj, 'company')
-        const [res] = await DB.query(query, vals)
-        return res
+        try {
+            const [query, vals] = this.getUpdateQueryData(obj, 'company')
+            const [res] = await DB.query(query, vals)
+            return res
+        } catch (e) {
+            throw new InternalServerError(e.message)
+        }
     }
 
     async insert(obj) {
-        const [query, vals] = this.getInsertQueryData(obj, 'company')
-        vals.pop() // no need for 'id' value since its an insert
-        const [res] = await DB.query(query, vals)
-        return res
+        try {
+            const [query, vals] = this.getInsertQueryData(obj, 'company')
+            vals.pop() // no need for 'id' value since its an insert
+            const [res] = await DB.query(query, vals)
+            return res
+        } catch (e) {
+            throw new InternalServerError(e.message)
+        }
     }
 
     #getById = async (id) => (await DB.query('select * from company where id = ?', [id]))[0][0]

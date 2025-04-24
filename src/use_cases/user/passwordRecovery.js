@@ -1,11 +1,6 @@
 const { userDAO } = require('../../dao')
 const EMAIL_SERVICE = require('../../infra/email')
-const { 
-    InternalServerError, 
-    ValidationError, 
-    UnauthorizedError,
-    UseCaseError
-} = require('../../infra/errors')
+const { ValidationError, UnauthorizedError, UseCaseError } = require('../../infra/errors')
 const { getUserByEmail } = require('./helpers')
 
 const cooldownErr = (secs) => `There is a one minute cooldown for password recovery, ${(60 - secs).toFixed()} seconds remaining`
@@ -19,7 +14,7 @@ async function passwordRecovery(req) {
     if (secsPassed < 60) throw new UnauthorizedError(cooldownErr(secsPassed))
 
     user.recoverPassword()
-    await userDAO.update(user).catch(e => { throw new InternalServerError(e.message) })
+    await userDAO.update(user)
     const msg = `Your password recovery code is: ${user.code}`
 
     if (process.env.MODE === 'testing') EMAIL_SERVICE.sendMockEmail(user.email, msg)        

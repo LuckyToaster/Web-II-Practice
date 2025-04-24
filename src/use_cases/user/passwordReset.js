@@ -1,9 +1,6 @@
-const { userDAO } = require('../../dao')
-const { 
-    InternalServerError, 
-    ValidationError,
-} = require('../../infra/errors')
+const { ValidationError } = require('../../infra/errors')
 const { getUserByEmail } = require('./helpers')
+const { userDAO } = require('../../dao')
 
 
 async function passwordReset(req) {
@@ -18,7 +15,7 @@ async function passwordReset(req) {
     } catch(e) {
         throw e
     } finally {
-        await userDAO.update(user).catch(e => { throw new InternalServerError(e.message) })
+        await userDAO.update(user)
     }
 }
 

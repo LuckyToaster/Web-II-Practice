@@ -11,12 +11,7 @@ async function login(req) {
 
     return {
         token: user.getJwt(), 
-        user: { 
-            email: user.email, 
-            role: user.role, 
-            id: user.id, 
-            name: user.name 
-        }
+        user: user.masked()
     }
 }
 
