@@ -10,7 +10,7 @@ async function login(req) {
     user.login(req.body.password)
 
     return {
-        token: user.getJwt(), 
+        token: user.getJwt(true), 
         user: { 
             email: user.email, 
             role: user.role, 

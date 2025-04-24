@@ -7,6 +7,13 @@ const getByJwt = require('../use_cases/user/getByJwt')
 const deleteByJwt = require('../use_cases/user/deleteByJwt')
 const passwordRecovery = require('../use_cases/user/passwordRecovery')
 const passwordReset = require('../use_cases/user/passwordReset')
+const pfp = require('../use_cases/user/pfp')
+
+const multer = require('multer')
+const upload = multer({ 
+    dest: '../../uploads', 
+    limits: { fileSize: 2097152 } // 2MB
+})
 
 const router = new Router()
 
@@ -52,6 +59,11 @@ router.post('/password_recovery', async (req, res, next) => {
 
 router.put('/password_reset', async (req, res, next) => {
     await passwordReset(req).then(r => res.status(200).json(r)).catch(e => next(e))
+})
+
+router.patch('/logo', upload.single('pfp'), async (req, res, next) => {
+    await pfp(req)//.then(_ => res.status(201).send()).catch(e => next(e))
+    res.status(200).send()
 })
 
 module.exports = router

@@ -72,8 +72,12 @@ class User {
         if (!bcrypt.compareSync(password, this.password)) throw new UnauthorizedError('Password is incorrect')
     }
 
-    getJwt() { 
-        return jwt.sign({ email: this.email, id: this.id }, process.env.JWT_SECRET, { expiresIn: '15m' }) 
+    getJwt(expires) { 
+        return jwt.sign(
+            { email: this.email, id: this.id }, 
+            process.env.JWT_SECRET, 
+            expires ? { expiresIn: '15m' } : undefined
+        ) 
     }
 
 

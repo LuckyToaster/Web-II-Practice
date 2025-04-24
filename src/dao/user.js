@@ -27,6 +27,7 @@ class UserDAO extends SuperDAO {
                 createdAt timestamp DEFAULT CURRENT_TIMESTAMP,
                 updatedAt timestamp DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
                 companyId int, 
+                pfpUrl varchar(256),
                 foreign key (companyId) references company(id) on delete set null on update cascade
             )`
         )
