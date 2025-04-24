@@ -12,7 +12,7 @@ const pfp = require('../use_cases/user/pfp')
 const multer = require('multer')
 const upload = multer({ 
     dest: '../../uploads', 
-    limits: { fileSize: 2097152 } // 2MB
+    limits: { fileSize: 1048576 } // 1MB
 })
 
 const router = new Router()
@@ -41,7 +41,7 @@ router.post('/login', async (req, res, next) => {
     }
 })
 
-router.post('/onboarding', async (req, res, next) => {
+router.patch('/onboarding', async (req, res, next) => {
     await onboarding(req).then(_ => res.status(200).json(r)).catch(e => next(e))
 })
 
