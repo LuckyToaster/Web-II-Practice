@@ -1,5 +1,5 @@
-const express = require("express")
 const { configureMiddlewares, errorHandlerMiddleware } = require('./middleware')
+const express = require("express")
 require('dotenv').config()
 
 const userRouter = require("../../routes/user")

@@ -1,5 +1,6 @@
 const { Router } = require("express")
 const multer = require('multer')
+const { join } = require('path')
 
 const register = require('../use_cases/user/register')
 const validate = require('../use_cases/user/validate')
@@ -10,9 +11,11 @@ const deleteByJwt = require('../use_cases/user/deleteByJwt')
 const passwordRecovery = require('../use_cases/user/passwordRecovery')
 const passwordReset = require('../use_cases/user/passwordReset')
 const pfp = require('../use_cases/user/pfp')
+const metrics = require('../use_cases/user/metrics')
+const { UPLOADS_PATH } = require('../infra/constants')
 
 const upload = multer({ 
-    dest: __dirname + '../uploads',
+    dest: UPLOADS_PATH,
     limits: { fileSize: 1048576 } // 1MB
 })
 
@@ -64,6 +67,10 @@ router.put('/password_reset', async (req, res, next) => {
 
 router.patch('/pfp', upload.single('pfp'), async (req, res, next) => {
     await pfp(req).then(_ => res.status(201).send()).catch(e => next(e))
+})
+
+router.get('/metrics', async (req, res, next) => {
+    await metrics(req).then(r => res.status(200).json(r)).catch(e => next(e))
 })
 
 module.exports = router

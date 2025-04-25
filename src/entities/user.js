@@ -67,6 +67,10 @@ class User {
         return this.status === User.#status.recovery 
     }
 
+    isDeleted() {
+        return this.deleted ? true : false
+    }
+
     login(password) { 
         if (this.isUnvalidated()) throw new UnauthorizedError('User is not yet validated')
         if (this.isRecoveringPassword()) throw new UnauthorizedError('Cannot login while recovering password')
@@ -153,6 +157,10 @@ class User {
 
     softDelete() {
         this.deleted = true
+    }
+
+    setPfpUrl(url) {
+        this.pfpUrl = url
     }
 }
 
