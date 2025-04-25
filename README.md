@@ -85,4 +85,3 @@ We believe that we can make an application that is both flexible and extensible 
 - The DAOs and Entities are coupled:
     - Entities know about the DAOs table schema to sanitize input
     - Changing the DB implies re-writing the DAOs and editing the entities slightly
-    - 
