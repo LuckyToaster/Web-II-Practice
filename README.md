@@ -1,30 +1,11 @@
-## 🪆 Project Organization
-- **DAO** (Data Access Object) - Each file in `dao` directory contains a class that represents a table in the DB and has access to it
-- **VO** (Value Object) - Business logic goes here, each file in `vo` contains a class that is passed to the DAO objects to do CRUD operations on the DB
-- **web** - Contains anything related to the website, front and backend
-    - **public** - Contains the static site that is served by the express server
-    - **server** - Contains the Server logic (express)
-        - **routes** - Defines API routes for each DAO and VO
+# Web Development II Practice
 
-If we had 5 tables in the DB, we'd have a DAO, a VO, and a route for each table. So we'd have 5 files in the `dao` directory, 5 files in the `vo` directory and 5 files in the `routes` directory.
+## Aim
+In this project, we want to demonstrate that we can build a simple API with a codebase that is both **flexible** and **extensible**.
 
---- 
+---
 
-## 🤔 Why we do this?
-Because it allows our code to be neatly organized, and keeps the **business logic** separate from the **infrastructure logic** (the server/API and the persistence/DB).
-
-#### There are 3 types of logic we want to keep separate:
-- **1)** Business
-- Infrastructure
-    - **2)** web / server / API
-    - **3)** persistence / data / DB
-
-And organizing the code in this way not only allows us to that, it also allows us to extend to the project with ease, by adding the necessary DAOs, VOs and Routes as the project grows.
-Thus, not only are separating our concerns and **de-coupling** our cude, we are also making it **flexible** and **extensible**
-
---- 
-
-## 🏗️ Building
+## Building And Running
 1. `git clone` this project
 2. Install and set up a MariaDB database (Open source fork of MySQL): 
 ```bash
@@ -45,6 +26,60 @@ FLUSH PRIVILEGES;
 EXIT;
 ```
 3. After this you might want to update the environtment variables in the `.env` file to match your DB credentials
-4. `npm install` to download dependencies **ACTUALLY USE NPM CI** to use the package-lock.json (no unexpected behaviour)
+4. `npm ci` to install dependencies using the `package-lock.json`
 5. `npm start` to start the project
 
+---
+
+## MVC and Clean Code Architecture
+We have learnt about different code organization approaches, mainly **MVC** and **Clean Architecture**. 
+
+### The MVC model:
+- Provides a simple separation of concerns
+- Distinguishes between 3 parts:
+    - **Model**, aka persistence or DB
+    - **View** aka Frontend, API or public interface
+    - **Controller**, business logic or code that connects the previous two
+
+### Clean Code Architecture:
+- Encompases more than MVC, it is like a superset of it.
+- Divides the project into more components
+- It is focused on separating the **business logic code** from the **infrastructure code**
+
+As you can see, each code organization philosophy has its own set of terminology, but often these terms can be used interchangeably.
+
+---
+
+## Our Philosophy
+For making a simple API, we found the Clean Code approach to be too complex and cumbersome.
+
+We believe that we can make an application that is both flexible and extensible with a simple approach that is a blend of MVC and clean architecture
+
+### We see our Server consisting of **4 layers**:
+1. **DAOs (Data Access Objects)** ⇒ Our persistence layer, responsible of DB operations
+2. **Entities Objects/Classes** ⇒ Passed to-and-from the DAOs, responsible for sanitising data passed to DAO and containing business methods.
+3. **Use Cases** ⇒ Use the daos and the entities to perform our logic to be sent to the routes
+4. **Routes** ⇒ Our API endpoints
+
+### What each layer **knows**:
+- **DAOs** know about the DB table schema and doing queries on that table
+- **Entities** know about their corresponding DAO's schema
+- **Use Cases** know about the DAO and entities' **interface** (their methods), but they do not know or care about their implementation
+- **Routes** kow about the existence of their corresponding use case, and whether it returns data or not.
+
+### Commonalities with the MVC and Clean Code Architectures:
+- The Entities and Use Cases are responsible of **business logic**
+- The DAOs and Routes are more closely tied with the **infrastructure** of the project
+- The entities and use cases can be thought of as the Controller in MVC
+
+### Pros:
+- Allows extending the project with ease, by adding the necessary _DAOs_, _Entities_, _Use Cases_ and _Routes_ as the project grows
+- Allows to change our Infrastructure with ease:
+    - In the case of the Server: New Routes just need to call their corresponding use cases
+    - In the case of the DB layer: DAOs just need to provide the same usage interface
+
+### Cons:
+- The DAOs and Entities are coupled:
+    - Entities know about the DAOs table schema to sanitize input
+    - Changing the DB implies re-writing the DAOs and editing the entities slightly
+    - 
