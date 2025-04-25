@@ -13,11 +13,8 @@ apt install mariadb-server
 sudo systemctl start mariadb
 sudo systemctl enable mariadb
 sudo mysql_secure_installation # this is for security but it can be skipped
-sudo mysql -u root -p # log into mysql
+sudo mysql -u root 
 ```
-(must be logged in as root, in my case mysql -u root -p didnt work,
-but i tried su, then `mysql -u root`  and ... it worked in sudo mode
-
 ```sql
 CREATE DATABASE practice;
 CREATE USER 'dev'@'%' IDENTIFIED BY 'dev';
@@ -25,7 +22,7 @@ GRANT ALL PRIVILEGES ON practice.* TO 'dev'@'%';
 FLUSH PRIVILEGES;
 EXIT;
 ```
-3. After this you might want to update the environtment variables in the `.env` file to match your DB credentials
+3. After this you might want to update the environment variables in the `.env` file to match your DB credentials
 4. `npm ci` to install dependencies using the `package-lock.json`
 5. `npm start` to start the project
 
