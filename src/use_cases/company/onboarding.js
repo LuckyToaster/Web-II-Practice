@@ -1,6 +1,6 @@
 const { companyDAO, userDAO } = require('../../dao/')
 const { getTokenFromAuthHeader, getUserByJwt } = require('../user/helpers')
-const { ValidationError, InternalServerError, ConflictError } = require('../../infra/errors')
+const { ValidationError, ConflictError } = require('../../infra/errors')
 const Company = require('../../entities/company')
 
 
@@ -17,8 +17,8 @@ async function onboarding(req) {
     const user = await getUserByJwt(token)
 
     let company = new Company({ ...req.body })
-    const data = await companyDAO.get(company).catch(e => { throw new InternalServerError(e.message) })
-    if (data) throw new ConflictError('Company already exists')
+    const data = await companyDAO.get(company)
+    if (data) await companyDAO.delete(company)
 
     company.setAddress(address).setPostalCode(postalCode).setCity(city).setProvince(province)
 
@@ -26,11 +26,12 @@ async function onboarding(req) {
         company.setCif(user.nif).setName(user.name)
     else company.setCif(cif).setName(name)
 
-    await companyDAO.insert(company).catch(e => { throw new InternalServerError(e.message) })
-    company = await companyDAO.get(company).catch(e => { throw new InternalServerError(e.message) })
+    await companyDAO.insert(company)
+    company = await companyDAO.get(company)
 
     user.setCompanyId(company.id)
-    await userDAO.update(user).catch(e => { throw new InternalServerError(e.message) })
+
+    await userDAO.update(user)
 }
 
 
