@@ -26,6 +26,9 @@ EXIT;
 4. `npm ci` to install dependencies using the `package-lock.json`
 5. `npm start` to start the project
 
+
+We installed jest and supertest with `npm install --save-dev jest supertest
+
 ---
 
 ## API

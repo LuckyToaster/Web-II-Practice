@@ -37,6 +37,8 @@ function start() {
             startServer(app, 0)
         }
     })
+
+    return server
 }
 
 
