@@ -1,14 +1,13 @@
 const { ValidationError } = require('../../infra/errors')
 const { getTokenFromAuthHeader } = require('../helpers')
-const { clientDAO, userDAO } = require('../../dao')
+const { getUserByJwt } = require('../user/helpers')
+const { clientDAO } = require('../../dao')
 const Client = require('../../entities/client')
-const User = require('../../entities/client')
 
 
 async function create(req) {
     const token = getTokenFromAuthHeader(req)
-    const user = User.verifyJwt(token)
-    user = await userDAO.get(user)
+    const user = await getUserByJwt(token)
 
     if (!req.body.cif) 
         throw new ValidationError(`Request body does not contain a 'cif' field`)

@@ -2,7 +2,7 @@ const { userDAO } = require('../../dao')
 const User = require('../../entities/user')
 const { NotFoundError, UnauthorizedError } = require('../../infra/errors')
 
-const { ValidationError, UnauthorizedError, UseCaseError } = require('../infra/errors')
+//const { ValidationError, UnauthorizedError, UseCaseError } = require('../infra/errors')
 
 function getTokenFromAuthHeader(req) {
     const authHeader = req.get('Authorization')
