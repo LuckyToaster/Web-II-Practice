@@ -1,5 +1,4 @@
 const { ValidationError, UnauthorizedError, UseCaseError } = require('../infra/errors')
-const bcrypt = require('bcryptjs')
 const jwt = require('jsonwebtoken')
 require('dotenv').config()
 
@@ -32,9 +31,8 @@ class Client {
         }
     }
 
-    getJwt() { 
-        return jwt.sign({ ...this }, process.env.JWT_SECRET, { expiresIn: '15m' }) 
-    }
+    getJwt() { return jwt.sign({ ...this }, process.env.JWT_SECRET, { expiresIn: '15m' }) }
+    softDelete() { this.deleted = true }
 }
 
 

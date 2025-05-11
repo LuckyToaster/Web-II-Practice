@@ -16,23 +16,24 @@ class ProjectDAO extends SuperDAO {
         await DB.query(
             `CREATE TABLE IF NOT EXISTS project (
                 id int auto_increment primary key, 
+                userId int,
+                clientId int,
+
                 name varchar(128),
+                notes varchar(256),
+                projectCode varchar(6),
+                begin date,
+                end date,
 
                 address varchar(128),
                 postalCode int,
                 city varchar(128),
                 province varchar(128),
 
-                userId ,
-                clientId ,
-                projectCode varchar(6),
-                begin TIMESTAMP,
-                end TIMESTAMP,
-                notes varchar(256),
+                deleted bool,
 
                 createdAt timestamp DEFAULT CURRENT_TIMESTAMP,
                 updatedAt timestamp DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-
                 FOREIGN KEY (userId) REFERENCES user(id),
                 FOREIGN KEY (clientId) REFERENCES client(id)
             )`

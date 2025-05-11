@@ -38,7 +38,7 @@ class DeliveryNoteDAO extends SuperDAO {
 
     async getAll() {
         try {
-            const [res] = await DB.query("select * from company")
+            const [res] = await DB.query("select * from deliveryNote")
             return res
         } catch (e) {
             throw new InternalServerError(e.message)
@@ -48,7 +48,7 @@ class DeliveryNoteDAO extends SuperDAO {
     async get(obj) { 
         try {
             if (obj.id) return await this.#getById(obj.id)
-            const [query, vals] = this.getSelectQueryData(obj, 'company')
+            const [query, vals] = this.getSelectQueryData(obj, 'deliveryNote')
             const [res] = await DB.query(query, vals)
             return res
         } catch (e) {
@@ -59,7 +59,7 @@ class DeliveryNoteDAO extends SuperDAO {
     async delete(obj) {
         try {
             if (obj.id) return await this.#deleteById(obj.id) 
-            const [query, vals] = this.getDeleteQueryData(obj, 'company')
+            const [query, vals] = this.getDeleteQueryData(obj, 'deliveryNote')
             const [res] = await DB.query(query, vals)
             return res
         } catch (e) {
@@ -69,7 +69,7 @@ class DeliveryNoteDAO extends SuperDAO {
 
     async update(obj) { 
         try {
-            const [query, vals] = this.getUpdateQueryData(obj, 'company')
+            const [query, vals] = this.getUpdateQueryData(obj, 'deliveryNote')
             const [res] = await DB.query(query, vals)
             return res
         } catch (e) {
@@ -79,7 +79,7 @@ class DeliveryNoteDAO extends SuperDAO {
 
     async insert(obj) {
         try {
-            const [query, vals] = this.getInsertQueryData(obj, 'company')
+            const [query, vals] = this.getInsertQueryData(obj, 'deliveryNote')
             vals.pop() // no need for 'id' value since its an insert
             const [res] = await DB.query(query, vals)
             return res

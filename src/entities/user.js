@@ -100,7 +100,7 @@ class User {
 
     setNif(nif) {
         if (nif.length != 9) throw new ValidationError('"nif" must be exactly 9 characters long')
-        const correct = nif.slice(0, 8).split('').filter(n => isNaN(parseInt(n))) && isNaN(parseInt(nif[8]))
+        const correct = nif.slice(0, 8).split('').filter(n => isNaN(parseInt(n))).length === 0 && isNaN(parseInt(nif[8]))
         if (!correct) throw new ValidationError('"nif" must be a valid nif')
         this.nif = nif
     }

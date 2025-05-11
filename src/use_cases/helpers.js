@@ -12,4 +12,4 @@ function getTokenFromAuthHeader(req) {
 }
 
 
-module.exports = { getTokenFromAuthHeader, verifyJwt }
+module.exports = { getTokenFromAuthHeader }
