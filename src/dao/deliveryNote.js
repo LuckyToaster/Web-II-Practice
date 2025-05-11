@@ -27,11 +27,11 @@ class DeliveryNoteDAO extends SuperDAO {
                 pending bool,
 
                 createdAt timestamp DEFAULT CURRENT_TIMESTAMP,
-                updatedAt timestamp DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+                updatedAt timestamp DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
 
-                FOREIGN KEY (userId) REFERENCES user(id),
-                FOREIGN KEY (clientId) REFERENCES client(id)
-                FOREIGN KEY (projectId) REFERENCES project(id)
+                FOREIGN KEY (userId) REFERENCES user(id) on delete set null on update cascade,
+                FOREIGN KEY (clientId) REFERENCES client(id) on delete set null on update cascade,
+                FOREIGN KEY (projectId) REFERENCES project(id) on delete set null on update cascade
             )`
         )
     }
