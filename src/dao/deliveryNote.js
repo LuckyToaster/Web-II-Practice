@@ -1,6 +1,7 @@
 const { InternalServerError } = require('../infra/errors')
 const DB = require('../infra/db')
 const SuperDAO = require('./super')
+const DeliveryNote = require('../entities/deliveryNote')
 
 
 class DeliveryNoteDAO extends SuperDAO {
@@ -16,7 +17,6 @@ class DeliveryNoteDAO extends SuperDAO {
         await DB.query(
             `CREATE TABLE IF NOT EXISTS deliveryNote (
                 id int auto_increment primary key, 
-
                 userId int,
                 clientId int,
                 projectId int,
@@ -39,7 +39,7 @@ class DeliveryNoteDAO extends SuperDAO {
     async getAll() {
         try {
             const [res] = await DB.query("select * from deliveryNote")
-            return res
+            return res.map(r => new DeliveryNote(r))
         } catch (e) {
             throw new InternalServerError(e.message)
         }
@@ -47,10 +47,17 @@ class DeliveryNoteDAO extends SuperDAO {
 
     async get(obj) { 
         try {
-            if (obj.id) return await this.#getById(obj.id)
+            if (obj.id) {
+                const data = await this.#getById(obj.id)
+                return data? new DeliveryNote(data): null
+            }
+
             const [query, vals] = this.getSelectQueryData(obj, 'deliveryNote')
             const [res] = await DB.query(query, vals)
-            return res
+
+            if (res.length === 0) return null
+            if (res.length === 1) return new DeliveryNote(res[0])
+            return res.map(r => new DeliveryNote(r))
         } catch (e) {
             throw new InternalServerError(e.message)
         }
@@ -88,9 +95,9 @@ class DeliveryNoteDAO extends SuperDAO {
         }
     }
 
-    #getById = async (id) => (await DB.query('select * from company where id = ?', [id]))[0][0]
-    #deleteById = async (id) => (await DB.query("delete from company where id = ?", [id]))[0][0]
+    #getById = async (id) => (await DB.query('select * from deliveryNote where id = ?', [id]))[0][0]
+    #deleteById = async (id) => (await DB.query("delete from deliveryNote where id = ?", [id]))[0][0]
 }
 
 
-module.exports = new CompanyDAO()
+module.exports = new DeliveryNoteDAO()

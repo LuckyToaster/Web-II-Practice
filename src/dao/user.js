@@ -1,4 +1,5 @@
 const { InternalServerError } = require('../infra/errors')
+const User = require('../entities/user')
 const SuperDAO = require('./super')
 const DB = require('../infra/db')
 
@@ -37,7 +38,7 @@ class UserDAO extends SuperDAO {
     async getAll() {
         try {
             const [res] = await DB.query("select * from user")
-            return res
+            return res.map(r => new User(r))
         } catch (e) {
             throw new InternalServerError(e.message)
         }
@@ -45,11 +46,23 @@ class UserDAO extends SuperDAO {
 
     async get(obj) { 
         try {
-            if (obj.id) return await this.#getById(obj.id)
-            if (obj.email) return await this.#getByEmail(obj.email)
+            if (obj.id) {
+                const data = await this.#getById(obj.id)
+                return data? new User(data): null
+            }
+
+            if (obj.email) {
+                const data = await this.#getByEmail(obj.email)
+                return data? new User(data): null
+            }
+
             const [query, vals] = this.getSelectQueryData(obj, 'user')
             const [res] = await DB.query(query, vals)
-            return res
+
+            if (res.length === 0) return null
+            if (res.length === 1) return new User(res[0])
+            return res.map(r => new User(r))
+
         } catch (e) {
             throw new InternalServerError(e.message)
         }

@@ -1,13 +1,14 @@
 const { InternalServerError } = require('../infra/errors')
 const DB = require('../infra/db')
 const SuperDAO = require('./super')
+const Project = require('../entities/project')
 
 
 class ProjectDAO extends SuperDAO {
     constructor() {
         super()
         if (ProjectDAO._instance) 
-            throw new Error('CompanyDAO is a singleton')
+            throw new Error('ProjectDAO is a singleton')
         ProjectDAO._instance = this
         this.#createTableIfNotExists()
     }
@@ -43,7 +44,7 @@ class ProjectDAO extends SuperDAO {
     async getAll() {
         try {
             const [res] = await DB.query("select * from project")
-            return res
+            return res.map(r => new Project(r))
         } catch (e) {
             throw new InternalServerError(e.message)
         }
@@ -51,10 +52,17 @@ class ProjectDAO extends SuperDAO {
 
     async get(obj) { 
         try {
-            if (obj.id) return await this.#getById(obj.id)
+            if (obj.id) {
+                const data = await this.#getById(obj.id)
+                return data? new Project(data): null
+            }
+
             const [query, vals] = this.getSelectQueryData(obj, 'project')
             const [res] = await DB.query(query, vals)
-            return res
+
+            if (res.length === 0) return null
+            if (res.length === 1) return new Project(data)
+            return res.map(r => new Project(r))
         } catch (e) {
             throw new InternalServerError(e.message)
         }

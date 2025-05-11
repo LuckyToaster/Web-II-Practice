@@ -1,4 +1,4 @@
-const { getTokenFromAuthHeader, getUserByJwt } = require('./helpers')
+const { getTokenFromAuthHeader, getUserByJwt } = require('../helpers')
 const { ValidationError } = require('../../infra/errors')
 const { userDAO } = require('../../dao')
 

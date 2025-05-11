@@ -1,17 +1,18 @@
 const { ValidationError } = require('../../infra/errors')
-const { getUserByEmail } = require('./helpers')
+const { getUserByEmail } = require('../helpers')
 const { userDAO } = require('../../dao')
 
 
 async function passwordReset(req) {
-    if (!req.body.code) throw new ValidationError('Request body does not contain a "code" field')
-    if (!req.body.email) throw new ValidationError('Request body does not contain an "email" field')
-    if (!req.body.password) throw new ValidationError('Request body does not contain a "password" field')
+    const { email, code, password } = req.body
+    if (!code) throw new ValidationError('Request body does not contain a "code" field')
+    if (!email) throw new ValidationError('Request body does not contain an "email" field')
+    if (!password) throw new ValidationError('Request body does not contain a "password" field')
 
-    const user = await getUserByEmail(req.body.email)
+    const user = await getUserByEmail(email)
 
     try {
-        user.resetPassword(req.body.code, req.body.password)
+        user.resetPassword(code, password)
     } catch(e) {
         throw e
     } finally {

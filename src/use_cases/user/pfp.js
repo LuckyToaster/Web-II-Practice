@@ -1,5 +1,5 @@
 const { userDAO } = require('../../dao')
-const { getTokenFromAuthHeader, getUserByJwt } = require('./helpers')
+const { getTokenFromAuthHeader, getUserByJwt } = require('../helpers')
 const { ValidationError } = require('../../infra/errors')
 const { UPLOADS_PATH } = require('../../infra/constants')
 

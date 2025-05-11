@@ -1,7 +1,7 @@
 const { ValidationError, UnauthorizedError, UseCaseError } = require('../../infra/errors')
 const emailService = require('../../infra/email')
 const { userDAO } = require('../../dao')
-const { getUserByEmail } = require('./helpers')
+const { getUserByEmail } = require('../helpers')
 
 const cooldownErr = (secs) => `There is a one minute cooldown for password recovery, ${(60 - secs).toFixed()} seconds remaining`
 

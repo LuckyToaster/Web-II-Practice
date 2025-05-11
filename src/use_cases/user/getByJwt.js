@@ -1,4 +1,4 @@
-const { getUserByJwt, getTokenFromAuthHeader } = require('./helpers')
+const { getTokenFromAuthHeader, getUserByJwt } = require('../helpers')
 
 async function getByJwt(req) {
     const token = await getTokenFromAuthHeader(req)

@@ -1,14 +1,9 @@
 const { userDAO, companyDAO } = require('../../dao')
-const User = require('../../entities/user')
-const Company = require('../../entities/company')
 
 
 async function metrics() {
     let users = await userDAO.getAll()
     let companies = await companyDAO.getAll()
-
-    users = users.map(u => new User(u))
-    companies = companies.map(c => new Company(c))
 
     const activeUsers = users.filter(u => !u.isDeleted() && u.isValidated())
     const numDeletedUsers = users.filter(u => u.isDeleted()).length

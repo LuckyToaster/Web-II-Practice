@@ -1,6 +1,6 @@
+const { ValidationError } = require('../../infra/errors')
+const { getTokenFromAuthHeader, getUserByJwt } = require('../helpers')
 const { companyDAO, userDAO } = require('../../dao/')
-const { getTokenFromAuthHeader, getUserByJwt } = require('../user/helpers')
-const { ValidationError, ConflictError } = require('../../infra/errors')
 const Company = require('../../entities/company')
 
 

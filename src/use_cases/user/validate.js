@@ -1,6 +1,6 @@
-const { userDAO } = require('../../dao')
 const { ValidationError } = require('../../infra/errors')
-const { getTokenFromAuthHeader, getUserByJwt } = require('./helpers')
+const { getTokenFromAuthHeader, getUserByJwt  } = require('../helpers')
+const { userDAO } = require('../../dao')
 
 
 async function validate(req) {
@@ -8,7 +8,7 @@ async function validate(req) {
         throw new ValidationError('Request body does not contain a "code" field')
 
     const token = getTokenFromAuthHeader(req)
-    const user = await getUserByJwt(token)
+    let user = await getUserByJwt(token)
 
     let valError = null
     try {

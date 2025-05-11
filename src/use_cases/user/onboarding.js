@@ -1,4 +1,4 @@
-const { getTokenFromAuthHeader, getUserByJwt } = require('./helpers')
+const { getTokenFromAuthHeader, getUserByJwt } = require('../helpers')
 const { ValidationError } = require('../../infra/errors')
 const { userDAO } = require('../../dao')
 
@@ -12,11 +12,7 @@ async function onboarding(req) {
     if (!nif) throw new ValidationError('Request body does not contain a "nif" field')
 
     const user = await getUserByJwt(token)
-
-    // uff, use builder pattern here
-    user.setName(name)
-    user.setSurname(surname)
-    user.setNif(nif)
+    user.setName(name).setSurname(surname).setNif(nif)
     await userDAO.update(user)
 }
 

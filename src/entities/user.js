@@ -51,32 +51,6 @@ class User {
         }
     }
 
-    hasAttempts() { 
-        return this.numAttempts > 0 
-    }
-
-    isValidated() { 
-        return this.status === User.#status.validated 
-    }
-
-    isUnvalidated() { 
-        return this.status === User.#status.unvalidated 
-    }
-
-    isRecoveringPassword() { 
-        return this.status === User.#status.recovery 
-    }
-
-    isDeleted() {
-        return this.deleted ? true : false
-    }
-
-    login(password) { 
-        if (this.isUnvalidated()) throw new UnauthorizedError('User is not yet validated')
-        if (this.isRecoveringPassword()) throw new UnauthorizedError('Cannot login while recovering password')
-        if (!bcrypt.compareSync(password, this.password)) throw new UnauthorizedError('Password is incorrect')
-    }
-
     getJwt() { 
         return jwt.sign(
             { email: this.email, id: this.id }, 
@@ -85,29 +59,16 @@ class User {
         ) 
     }
 
+    hasAttempts() { return this.numAttempts > 0 }
+    isValidated() { return this.status === User.#status.validated }
+    isUnvalidated() { return this.status === User.#status.unvalidated }
+    isRecoveringPassword() { return this.status === User.#status.recovery }
+    isDeleted() { return this.deleted ? true : false }
 
-    setName(name) {
-        if (name.length > 128 || name.length < 2) 
-            throw new ValidationError('"name" must be between 2 and 128 characters long')
-        this.name = name
-    }
-
-    setSurname(surname) {
-        if (surname.length > 128 || surname.length < 2) 
-            throw new ValidationError('"surname" must be between 2 and 128 characters long')
-        this.surname = surname 
-    }
-
-    setNif(nif) {
-        if (nif.length != 9) throw new ValidationError('"nif" must be exactly 9 characters long')
-        const correct = nif.slice(0, 8).split('').filter(n => isNaN(parseInt(n))).length === 0 && isNaN(parseInt(nif[8]))
-        if (!correct) throw new ValidationError('"nif" must be a valid nif')
-        this.nif = nif
-    }
-
-    setCompanyId(id) {
-        if (typeof id !== 'number') throw new UseCaseError('Please make sure you are passing an id')
-        this.companyId = id
+    login(password) { 
+        if (this.isUnvalidated()) throw new UnauthorizedError('User is not yet validated')
+        if (this.isRecoveringPassword()) throw new UnauthorizedError('Cannot login while recovering password')
+        if (!bcrypt.compareSync(password, this.password)) throw new UnauthorizedError('Password is incorrect')
     }
 
     #validateCode(code) {
@@ -148,19 +109,50 @@ class User {
         this.password = bcrypt.hashSync(password, 10)  
     }
 
-    masked() {
-        delete this.password
-        delete this.code
-        delete this.numAttempts
+    setName(name) {
+        if (name.length > 128 || name.length < 2) 
+            throw new ValidationError('"name" must be between 2 and 128 characters long')
+        this.name = name
+        return this
+    }
+
+    setSurname(surname) {
+        if (surname.length > 128 || surname.length < 2) 
+            throw new ValidationError('"surname" must be between 2 and 128 characters long')
+        this.surname = surname 
+        return this
+    }
+
+    setNif(nif) {
+        if (nif.length != 9) throw new ValidationError('"nif" must be exactly 9 characters long')
+        const correct = nif.slice(0, 8).split('').filter(n => isNaN(parseInt(n))).length === 0 && isNaN(parseInt(nif[8]))
+        if (!correct) throw new ValidationError('"nif" must be a valid nif')
+        this.nif = nif
+        return this
+    }
+
+    setCompanyId(id) {
+        if (typeof id !== 'number') 
+            throw new UseCaseError('Please make sure you are passing an id')
+        this.companyId = id
         return this
     }
 
     softDelete() {
         this.deleted = true
+        return this
     }
 
     setPfpUrl(url) {
         this.pfpUrl = url
+        return this
+    }
+
+    masked() {
+        delete this.password
+        delete this.code
+        delete this.numAttempts
+        return this
     }
 }
 

@@ -1,6 +1,7 @@
 const { InternalServerError } = require('../infra/errors')
 const DB = require('../infra/db')
 const SuperDAO = require('./super')
+const Client = require('../entities/client')
 
 
 class ClientDAO extends SuperDAO {
@@ -40,7 +41,7 @@ class ClientDAO extends SuperDAO {
     async getAll() {
         try {
             const [res] = await DB.query("select * from client")
-            return res
+            return res.map(r => new Client(r))
         } catch (e) {
             throw new InternalServerError(e.message)
         }
@@ -48,11 +49,22 @@ class ClientDAO extends SuperDAO {
 
     async get(obj) { 
         try {
-            if (obj.id) return await this.#getById(obj.id)
-            if (obj.cif) return await this.#getByCif(obj.cif)
+            if (obj.id) {
+                const data = await this.#getById(obj.id)
+                return data? new Client(data): null
+            }
+
+            if (obj.cif) { 
+                const data = await this.#getByCif(obj.cif)
+                return data? new Client(data): null
+            }
+
             const [query, vals] = this.getSelectQueryData(obj, 'client')
             const [res] = await DB.query(query, vals)
-            return res
+            
+            if (res.length === 0) return null
+            if (res.length === 1) return new Client(res[0])
+            return res.map(r => new Client(r))
         } catch (e) {
             throw new InternalServerError(e.message)
         }

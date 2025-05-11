@@ -1,7 +1,7 @@
-const { userDAO } = require('../../dao')
-const User = require('../../entities/user')
 const { ValidationError, ConflictError } = require('../../infra/errors')
 const emailService = require('../../infra/email')
+const { userDAO } = require('../../dao')
+const User = require('../../entities/user')
 
 
 async function register(reqBody) {
@@ -9,17 +9,15 @@ async function register(reqBody) {
     if (!email) throw new ValidationError('Request body does not contain "email" field')
     if (!password) throw new ValidationError('Request body does not contain "password" field')
 
-    let user = new User({ email })
-    const data = await userDAO.get(user)
+    let user = await userDAO.get(new User({ email }))
 
-    if (data) {
-        user = new User(data)
-        const err = 'Cannot attempt registration with an already validated email'
-        if (user.isValidated()) throw new ConflictError(err)
-    } else {
+    if (user && user.isValidated())
+        throw new ConflictError('Cannot attempt registration with an already validated email')
+
+    if (!user) {
         user = User.create(email, password)
         await userDAO.insert(user)
-        user = new User(await userDAO.get(user))
+        user = await userDAO.get(user)
     }
 
     const msg = `Your validation code is: ${user.code}`
