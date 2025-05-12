@@ -33,7 +33,9 @@ We installed jest and supertest with `npm install --save-dev jest supertest
 
 ## API
 Test the API via a Postman collection. The Professor was invited via email and authorised to access the collection. 
-Additionally, here is the [Postman Invite Link](https://senen-practice.postman.co/workspace/My-Workspace~320f51ea-bede-449c-8dda-3c40471f6e58/collection/39674199-06277491-b14c-4ccc-ae1f-626e14e83676?action=share&creator=39674199)
+Here is the [Postman Invite Link](https://senen-practice.postman.co/workspace/My-Workspace~320f51ea-bede-449c-8dda-3c40471f6e58/collection/39674199-06277491-b14c-4ccc-ae1f-626e14e83676?action=share&creator=39674199)
+
+Additionally, there is the `openapi_documentation.yaml` file with the OpenAPI documentation
 
 ---
 
