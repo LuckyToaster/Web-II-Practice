@@ -44,8 +44,7 @@ class ProjectDAO extends SuperDAO {
     async getAll() {
         try {
             const [res] = await DB.query("select * from project")
-            if (res.length === 0) throw new NotFoundError('Client Table is empty')
-            return res.map(r => new Project(r))
+            return res.length === 0? null : res.map(r => new Project(r))
         } catch (e) {
             throw new InternalServerError(e.message)
         }
@@ -55,15 +54,14 @@ class ProjectDAO extends SuperDAO {
         try {
             if (obj.id) {
                 const data = await this.#getById(obj.id)
-                if (!data) throw new NotFoundError(`id: ${obj.id} not found`)
-                return new Client(data)
+                return data? new Client(data) : null
             }
 
             const [query, vals] = this.getSelectQueryData(obj, 'project')
             const [res] = await DB.query(query, vals)
 
-            if (res.length === 0) throw new NotFoundError(`Nothing found for the query: ${obj}`)
-            if (res.length === 1) return new Project(data)
+            if (res.length === 0) return null
+            if (res.length === 1) return new Project(res[0])
             return res.map(r => new Project(r))
         } catch (e) {
             throw new InternalServerError(e.message)

@@ -1,0 +1,594 @@
+openapi: 3.0.0
+info:
+  title: practice
+  version: 1.0.0
+  description: ''
+servers:
+  - url: 127.0.0.1
+paths:
+  /api/user/register:
+    parameters: []
+    post:
+      summary: register
+      parameters:
+        - name: Content-Type
+          in: header
+          required: false
+          example: application/json
+          schema:
+            type: string
+      responses:
+        '201':
+          description: Created - User registered successfully
+        '400':
+          description: Bad Request - Validation error
+        '409':
+          description: Conflict - Email already exists
+        '500':
+          description: Internal Server Error
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                  format: email
+                password:
+                  type: string
+  /api/user/validation:
+    parameters: []
+    put:
+      summary: validation
+      parameters:
+        - name: Content-Type
+          in: header
+          required: false
+          example: application/json
+          schema:
+            type: string
+        - name: Authorization
+          in: header
+          required: false
+          example: >-
+            Bearer
+            eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InNlbmVuQG1haWwuY29tIiwiaWQiOjEsImlhdCI6MTc0Njk4MTc0OCwiZXhwIjoxNzQ2OTgyNjQ4fQ.nPnSSzMbOsETc1HRyU1tnw90LRQ3HTl751t6GHFKxeo
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK - Validation successful
+        '400':
+          description: Bad Request - Invalid code
+        '401':
+          description: Unauthorized - Invalid token
+        '500':
+          description: Internal Server Error
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                code:
+                  type: string
+                  format: color
+  /api/user/login:
+    parameters: []
+    post:
+      summary: login
+      parameters:
+        - name: Content-type
+          in: header
+          required: false
+          example: application/json
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK - Login successful
+        '400':
+          description: Bad Request - Validation error
+        '401':
+          description: Unauthorized - Invalid credentials
+        '500':
+          description: Internal Server Error
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                  format: email
+                password:
+                  type: string
+  /api/user/:
+    parameters: []
+    get:
+      summary: /
+      parameters:
+        - name: Content-Type
+          in: header
+          required: false
+          example: application/json
+          schema:
+            type: string
+        - name: Authorization
+          in: header
+          required: false
+          example: >-
+            Bearer
+            eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InNlbmVuQG1haWwuY29tIiwiaWQiOjEsImlhdCI6MTc0Njk4MTg3MSwiZXhwIjoxNzQ2OTgyNzcxfQ.f7ukxQz6WZAGw3z2AD_HthIU5o9i-Hbfo-lNAGJI_CE
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK - User details retrieved
+        '401':
+          description: Unauthorized - Invalid token
+        '404':
+          description: Not Found - User not found
+        '500':
+          description: Internal Server Error
+    delete:
+      summary: /
+      parameters:
+        - name: Content-Type
+          in: header
+          required: false
+          example: application/json
+          schema:
+            type: string
+        - name: Authorization
+          in: header
+          required: false
+          example: >-
+            Bearer
+            eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImJvYkBtYWlsLmNvbSIsImlkIjoxLCJpYXQiOjE3NDU1MzMzOTcsImV4cCI6MTc0NTUzNDI5N30.Ff7G5y0qQJJancn5H_fjYPhyGAl8fQmmxn-whfNEIqE
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK - User deleted successfully
+        '401':
+          description: Unauthorized - Invalid token
+        '404':
+          description: Not Found - User not found
+        '500':
+          description: Internal Server Error
+
+  /api/user/onboarding:
+    parameters: []
+    patch:
+      summary: onboarding
+      parameters:
+        - name: Content-Type
+          in: header
+          required: false
+          example: application/json
+          schema:
+            type: string
+        - name: Authorization
+          in: header
+          required: false
+          example: >-
+            Bearer
+            eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InNlbmVuQG1haWwuY29tIiwiaWQiOjIsImlhdCI6MTc0NTU4MjM5NywiZXhwIjoxNzQ1NTgzMjk3fQ.ddwGG95_ymt-SbAZW7jmNZe-li53X3F-gMizeVxxpis
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK - Onboarding completed successfully
+        '400':
+          description: Bad Request - Validation error
+        '401':
+          description: Unauthorized - Invalid token
+        '500':
+          description: Internal Server Error
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                surname:
+                  type: string
+                nif:
+                  type: string
+  /api/user/password_recovery:
+    parameters: []
+    post:
+      summary: password_recovery
+      parameters:
+        - name: Content-Type
+          in: header
+          required: false
+          example: application/json
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK - Recovery email sent
+        '400':
+          description: Bad Request - Validation error
+        '404':
+          description: Not Found - Email not found
+        '500':
+          description: Internal Server Error
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                  format: email
+  /api/user/password_reset:
+    parameters: []
+    put:
+      summary: password_reset
+      parameters:
+        - name: Content-Type
+          in: header
+          required: false
+          example: application/json
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK - Password reset successful
+        '400':
+          description: Bad Request - Validation error
+        '401':
+          description: Unauthorized - Invalid code
+        '404':
+          description: Not Found - Email not found
+        '500':
+          description: Internal Server Error
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                  format: email
+                password:
+                  type: string
+                code:
+                  type: string
+                  format: color
+  /api/user/pfp:
+    parameters: []
+    patch:
+      summary: pfp
+      parameters:
+        - name: Content-Type
+          in: header
+          required: false
+          example: application/json
+          schema:
+            type: string
+        - name: Authorization
+          in: header
+          required: false
+          example: >-
+            Bearer
+            eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InNlbmVuQG1haWwuY29tIiwiaWQiOjIsImlhdCI6MTc0NTU4MjM5NywiZXhwIjoxNzQ1NTgzMjk3fQ.ddwGG95_ymt-SbAZW7jmNZe-li53X3F-gMizeVxxpis
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK - Profile picture updated
+        '400':
+          description: Bad Request - Invalid image
+        '401':
+          description: Unauthorized - Invalid token
+        '500':
+          description: Internal Server Error
+  /api/company/onboarding:
+    parameters: []
+    post:
+      summary: company onboarding
+      parameters:
+        - name: Content-Type
+          in: header
+          required: false
+          example: application/json
+          schema:
+            type: string
+        - name: Authorization
+          in: header
+          required: false
+          example: >-
+            Bearer
+            eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InNlbmVuQG1haWwuY29tIiwiaWQiOjIsImlhdCI6MTc0NTU4MzM4OCwiZXhwIjoxNzQ1NTg0Mjg4fQ.qjbKdlVMq2fKhPcTsdA566YyQGSzwkr9oRV2jPuGLwU
+          schema:
+            type: string
+      responses:
+        '201':
+          description: Created - Company created successfully
+        '400':
+          description: Bad Request - Validation error
+        '401':
+          description: Unauthorized - Invalid token
+        '409':
+          description: Conflict - Company already exists
+        '500':
+          description: Internal Server Error
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                cif:
+                  type: string
+                address:
+                  type: string
+                postalCode:
+                  type: integer
+                city:
+                  type: string
+                province:
+                  type: string
+  /api/company/:
+    parameters: []
+    get:
+      summary: company /
+      parameters: []
+      responses:
+        '200':
+          description: OK - Company list retrieved
+        '401':
+          description: Unauthorized - Invalid token
+        '500':
+          description: Internal Server Error
+  /api/user/metrics:
+    parameters: []
+    get:
+      summary: metrics
+      parameters: []
+      responses:
+        '200':
+          description: OK - Metrics retrieved
+        '401':
+          description: Unauthorized - Invalid token
+        '500':
+          description: Internal Server Error
+  /api/client/:
+    parameters: []
+    get:
+      summary: clients
+      parameters:
+        - name: Authorization
+          in: header
+          required: false
+          example: >-
+            Bearer
+            eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InNlbmVuQG1haWwuY29tIiwiaWQiOjIsImlhdCI6MTc0NjkwNDA0MywiZXhwIjoxNzQ2OTA0OTQzfQ.DJmChw22OmhbO6OLMBXAqYJW5HtecHi3Tt7gQ7NSXAM
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK - Clients list retrieved
+        '401':
+          description: Unauthorized - Invalid token
+        '500':
+          description: Internal Server Error
+    post:
+      summary: client
+      parameters:
+        - name: Authorization
+          in: header
+          required: false
+          example: 'Bearer '
+          schema:
+            type: string
+      responses:
+        '201':
+          description: Created - Client created successfully
+        '400':
+          description: Bad Request - Validation error
+        '401':
+          description: Unauthorized - Invalid token
+        '409':
+          description: Conflict - Client already exists
+        '500':
+          description: Internal Server Error
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+  /api/client/{id}:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+    get:
+      summary: client
+      parameters:
+        - name: Authorization
+          in: header
+          required: false
+          example: >-
+            Bearer
+            eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InNlbmVuQG1haWwuY29tIiwiaWQiOjIsImlhdCI6MTc0NjkwNDA0MywiZXhwIjoxNzQ2OTA0OTQzfQ.DJmChw22OmhbO6OLMBXAqYJW5HtecHi3Tt7gQ7NSXAM
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK - Client details retrieved
+        '401':
+          description: Unauthorized - Invalid token
+        '404':
+          description: Not Found - Client not found
+        '500':
+          description: Internal Server Error
+  /api/project:
+    parameters: []
+    post:
+      summary: project
+      parameters:
+        - name: Authorization
+          in: header
+          required: false
+          example: Bearer
+          schema:
+            type: string
+      responses:
+        '201':
+          description: Created - Project created successfully
+        '400':
+          description: Bad Request - Validation error
+        '401':
+          description: Unauthorized - Invalid token
+        '409':
+          description: Conflict - Project already exists
+        '500':
+          description: Internal Server Error
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                clientId:
+                  type: integer
+                userId:
+                  type: integer
+                name:
+                  type: string
+    delete:
+      summary: project
+      parameters:
+        - name: id
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: Authorization
+          in: header
+          required: false
+          example: Bearer
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK - Project deleted successfully
+        '401':
+          description: Unauthorized - Invalid token
+        '404':
+          description: Not Found - Project not found
+        '500':
+          description: Internal Server Error
+  /api/client/archived:
+    parameters: []
+    get:
+      summary: clients archived
+      parameters:
+        - name: Authorization
+          in: header
+          required: false
+          example: >-
+            Bearer
+            eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InNlbmVuQG1haWwuY29tIiwiaWQiOjIsImlhdCI6MTc0NjkwNDA0MywiZXhwIjoxNzQ2OTA0OTQzfQ.DJmChw22OmhbO6OLMBXAqYJW5HtecHi3Tt7gQ7NSXAM
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK - Archived clients list retrieved
+        '401':
+          description: Unauthorized - Invalid token
+        '500':
+          description: Internal Server Error
+  /api/project/:
+    parameters: []
+    get:
+      summary: projects
+      parameters:
+        - name: Authorization
+          in: header
+          required: false
+          example: >-
+            Bearer
+            eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InNlbmVuQG1haWwuY29tIiwiaWQiOjIsImlhdCI6MTc0NjkwNDA0MywiZXhwIjoxNzQ2OTA0OTQzfQ.DJmChw22OmhbO6OLMBXAqYJW5HtecHi3Tt7gQ7NSXAM
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK - Projects list retrieved
+        '401':
+          description: Unauthorized - Invalid token
+        '500':
+          description: Internal Server Error
+
+    put:
+      summary: project
+      parameters:
+        - name: id
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: Authorization
+          in: header
+          required: false
+          example: >-
+            Bearer
+            eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InNlbmVuQG1haWwuY29tIiwiaWQiOjIsImlhdCI6MTc0NjkwNDA0MywiZXhwIjoxNzQ2OTA0OTQzfQ.DJmChw22OmhbO6OLMBXAqYJW5HtecHi3Tt7gQ7NSXAM
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK - Project updated successfully
+        '400':
+          description: Bad Request - Validation error
+        '401':
+          description: Unauthorized - Invalid token
+        '404':
+          description: Not Found - Project not found
+        '500':
+          description: Internal Server Error
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                notes:
+                  type: string
+                end:
+                  type: string
+  /api/project/archived:
+    parameters: []
+    get:
+      summary: projects archived
+      parameters:
+        - name: Authorization
+          in: header
+          required: false
+          example: Bearer
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK - Archived projects list retrieved
+        '401':
+          description: Unauthorized - Invalid token
+        '500':
+          description: Internal Server Error
