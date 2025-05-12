@@ -1,19 +1,17 @@
-const { UnauthorizedError, UseCaseError } = require('../infra/errors')
+const { UnauthorizedError, ValidationError } = require('../infra/errors')
 const jwt = require('jsonwebtoken')
 require('dotenv').config()
 
 
 class Project {
-
     static #isSqlDate = (d) => typeof d === 'string' && d.at(4) === '-' && d.at(7) === '-'
     static #isSqlTimeStamp = (t) => Project.#isSqlDate(t) && t.at(10) === ' ' && t.at(13) === ':' && t.at(16) === ':'
     static #isValidDate = (d) => d instanceof Date && !isNaN(d)
     static #toSqlDate = (date) => date.toISOString().split('T')[0]
-    static #genCode = (length) => Array(length).fill(0).map(_ => Math.floor(Math.random() * 10)).join('')
 
     constructor(obj) {
-        if (!obj.id || (!obj.clientId || !obj.userId))
-            throw new UseCaseError(`Project requires object with either an 'id' field or 'clientId' and 'userId' fields in the constructor`)
+        if (!obj.id && (!obj.clientId || !obj.userId))
+            throw new ValidationError(`Project requires object with either an 'id' field or 'clientId' and 'userId' fields in the constructor`)
 
         if (obj.id) this.setId(obj.id)
         else this.id = null
@@ -36,7 +34,7 @@ class Project {
         if (obj.city) this.setCity(obj.city)
         else this.city = null
 
-        if (ob.province) this.setProvince(obj.province)
+        if (obj.province) this.setProvince(obj.province)
         else this.province = null
 
         if (obj.notes) this.setNotes(obj.notes)
@@ -58,10 +56,17 @@ class Project {
         this.updatedAt = obj.updatedAt?? null
     }
 
-    create(obj) {
-        let p =  new Project(obj)
-        if (!p.projectCode) p.projectCode = Project.#genCode(6)
-        return p
+    #setDeleted(deleted) {
+        if (typeof deleted !== 'boolean') 
+            throw new ValidationError(`'deleted' should be a boolean`)
+        this.deleted = deleted
+    }
+
+    #setId(val, id) {
+        if (typeof id !== 'number') 
+            throw new ValidationError('Please make sure you are passing an id')
+        this[val] = id
+        return this
     }
 
     static verifyJwt(token) {
@@ -77,37 +82,28 @@ class Project {
         return jwt.sign({ ...this }, process.env.JWT_SECRET, { expiresIn: '15m' }) 
     }
 
+    generateCode() {
+        this.projectCode = Array(6).fill(0).map(_ => Math.floor(Math.random() * 10)).join('')
+        return this
+    }
+
     softDelete() { 
         this.delete = true 
         return this
     }
 
-    #setId(val, id) {
-        if (typeof id !== 'number') 
-            throw new UseCaseError('Please make sure you are passing an id')
-        this[val] = id
+    setId(id) { 
+        this.#setId('id', id) 
         return this
     }
 
-    setId(id) {
-        this.#setId('id', id)
-    }
-    
-    setUserId(id) {
-        this.#setId('userId', id)
-    }
-
-    setUserId(id) {
-        if (typeof id !== 'number') 
-            throw new UseCaseError('Please make sure you are passing an id')
-        this.userId = id
+    setUserId(id) { 
+        this.#setId('userId', id) 
         return this
     }
-    
-    setClientId(id) {
-        if (typeof id !== 'number') 
-            throw new UseCaseError('Please make sure you are passing an id')
-        this.clientId = id
+
+    setClientId(id) { 
+        this.#setId('clientId', id) 
         return this
     }
 
@@ -174,10 +170,9 @@ class Project {
         return this
     }
 
-    #setDeleted(deleted) {
-        if (typeof deleted !== 'boolean') 
-            throw new ValidationError(`'deleted' should be a boolean`)
-        this.deleted = deleted
+    masked() {
+        const keys = Object.keys(this).filter(k => this[k] === null)
+        keys.forEach(k => delete this[k])
         return this
     }
 }

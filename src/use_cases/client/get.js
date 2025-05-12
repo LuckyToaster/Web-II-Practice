@@ -1,7 +1,6 @@
 const { clientDAO } = require('../../dao')
 const { ValidationError } = require('../../infra/errors')
-const { getTokenFromAuthHeader } = require('../helpers')
-const { getUserByJwt } = require('../user/helpers')
+const { getTokenFromAuthHeader, getUserByJwt} = require('../helpers')
 
 
 async function get(req) {

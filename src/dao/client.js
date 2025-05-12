@@ -1,4 +1,4 @@
-const { InternalServerError } = require('../infra/errors')
+const { InternalServerError, NotFoundError } = require('../infra/errors')
 const DB = require('../infra/db')
 const SuperDAO = require('./super')
 const Client = require('../entities/client')
@@ -20,6 +20,7 @@ class ClientDAO extends SuperDAO {
                 cif char(9) unique,
                 name varchar(128),
                 userId int,
+                companyId int,
 
                 address varchar(128),
                 postalCode int,
@@ -33,7 +34,8 @@ class ClientDAO extends SuperDAO {
 
                 createdAt timestamp DEFAULT CURRENT_TIMESTAMP,
                 updatedAt timestamp DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-                foreign key (userId) references user(id) on delete set null on update cascade
+                foreign key (userId) references user(id) on delete set null on update cascade,
+                foreign key (companyId) references company(id) on delete set null on update cascade
             )`
         )
     }
@@ -41,6 +43,7 @@ class ClientDAO extends SuperDAO {
     async getAll() {
         try {
             const [res] = await DB.query("select * from client")
+            if (res.length === 0) throw new NotFoundError('Client Table is empty')
             return res.map(r => new Client(r))
         } catch (e) {
             throw new InternalServerError(e.message)
@@ -51,18 +54,20 @@ class ClientDAO extends SuperDAO {
         try {
             if (obj.id) {
                 const data = await this.#getById(obj.id)
-                return data? new Client(data): null
+                if (!data) throw new NotFoundError(`id: ${obj.id} not found`)
+                return new Client(data)
             }
 
             if (obj.cif) { 
                 const data = await this.#getByCif(obj.cif)
-                return data? new Client(data): null
+                if (!data) throw new NotFoundError(`cif: ${obj.cif} not found`)
+                return new Client(data)
             }
 
             const [query, vals] = this.getSelectQueryData(obj, 'client')
             const [res] = await DB.query(query, vals)
             
-            if (res.length === 0) return null
+            if (res.length === 0) throw new NotFoundError(`Nothing found for the query: ${obj}`)
             if (res.length === 1) return new Client(res[0])
             return res.map(r => new Client(r))
         } catch (e) {

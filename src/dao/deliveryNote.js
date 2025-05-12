@@ -1,4 +1,4 @@
-const { InternalServerError } = require('../infra/errors')
+const { InternalServerError, NotFoundError } = require('../infra/errors')
 const DB = require('../infra/db')
 const SuperDAO = require('./super')
 const DeliveryNote = require('../entities/deliveryNote')
@@ -39,6 +39,7 @@ class DeliveryNoteDAO extends SuperDAO {
     async getAll() {
         try {
             const [res] = await DB.query("select * from deliveryNote")
+            if (res.length === 0) throw new NotFoundError('Client Table is empty')
             return res.map(r => new DeliveryNote(r))
         } catch (e) {
             throw new InternalServerError(e.message)
@@ -49,13 +50,14 @@ class DeliveryNoteDAO extends SuperDAO {
         try {
             if (obj.id) {
                 const data = await this.#getById(obj.id)
-                return data? new DeliveryNote(data): null
+                if (!data) throw new NotFoundError(`id: ${obj.id} not found`)
+                return new Client(data)
             }
 
             const [query, vals] = this.getSelectQueryData(obj, 'deliveryNote')
             const [res] = await DB.query(query, vals)
 
-            if (res.length === 0) return null
+            if (res.length === 0) throw new NotFoundError(`Nothing found for the query: ${obj}`)
             if (res.length === 1) return new DeliveryNote(res[0])
             return res.map(r => new DeliveryNote(r))
         } catch (e) {

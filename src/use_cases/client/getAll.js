@@ -1,5 +1,4 @@
-const { getTokenFromAuthHeader } = require('../helpers')
-const { getUserByJwt } = require('../user/helpers')
+const { getTokenFromAuthHeader, getUserByJwt } = require('../helpers')
 const { clientDAO } = require('../../dao')
 
 

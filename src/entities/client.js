@@ -8,11 +8,17 @@ class Client {
         if (!obj.id && !obj.cif) 
             throw new UseCaseError(`Client requires object with either 'cif' or 'id' field in the constructor`)
 
+        if (obj.id) this.#setId('id', obj.id)
+        else this.id = null
+
         if (obj.cif) this.setCif(obj.cif)
         else this.cif = null
 
         if (obj.userId) this.setUserId(obj.userId)
         else this.userId = null
+        
+        if (obj.companyId) this.setCompanyId(obj.companyId)
+        else this.companyId = null
 
         if (obj.name) this.setName(obj.name)
         else this.name = null
@@ -38,10 +44,24 @@ class Client {
         if (obj.pendingDeliveryNotes) this.setPendingDeliveryNotes(obj.pendingDeliveryNotes)
         else this.pendingDeliveryNotes = null
 
-        this.id = obj.id?? null
-        this.deleted  = obj.deleted?? null
+        if (obj.deleted) this.#setDeleted(obj.deleted)
+        else this.deleted = null
+
         this.createdAt = obj.createdAt?? null
         this.updatedAt = obj.updatedAt?? null
+    }
+
+    #setId(val, id) {
+        if (typeof id !== 'number') 
+            throw new ValidationError('Please make sure you are passing an id')
+        this[val] = id
+        return this
+    }
+
+    #setDeleted(deleted) {
+        if (typeof deleted !== 'boolean') 
+            throw new ValidationError(`'deleted' should be a boolean`)
+        this.deleted = deleted
     }
 
     static verifyJwt(token) {
@@ -53,21 +73,30 @@ class Client {
         }
     }
 
-    getJwt() { return jwt.sign({ ...this }, process.env.JWT_SECRET, { expiresIn: '15m' }) }
-    softDelete() { this.deleted = true }
+    getJwt() { 
+        return jwt.sign({ ...this }, process.env.JWT_SECRET, { expiresIn: '15m' }) 
+    }
+
+    setUserId(id) { 
+        this.#setId('userId', id) 
+        return this
+    }
+
+    setCompanyId(id) { 
+        this.#setId('companyId', id) 
+        return this
+    }
+
+    softDelete() { 
+        this.deleted = true 
+        return this
+    }
 
     setCif(cif) {
         if (cif.length != 9) throw new ValidationError('"cif" must be exactly 9 characters long')
         const correct = cif.slice(0, 8).split('').filter(n => isNaN(parseInt(n))).length === 0 && isNaN(parseInt(cif[8]))
         if (!correct) throw new ValidationError('"nif" must be a valid nif')
         this.cif = cif
-        return this
-    }
-
-    setUserId(id) {
-        if (typeof id !== 'number') 
-            throw new UseCaseError('Please make sure you are passing an id')
-        this.companyId = id
         return this
     }
 
@@ -107,19 +136,22 @@ class Client {
     }
 
     setLogo(logo) {
-        if (logo.length > 256) throw new ValidationError('Logo path must be less than 256 characters')
+        if (logo.length > 256) 
+            throw new ValidationError('Logo path must be less than 256 characters')
         this.logo = logo
         return this
     }
 
     setActiveProjects(n) {
-        if (typeof n !== 'number') throw new UseCaseError('ActiveProjects must be a number')
+        if (typeof n !== 'number') 
+            throw new ValidationError('ActiveProjects must be a number')
         this.activeProjects = n
         return this
     }
 
     setPendingDeliveryNotes(n) {
-        if (typeof n !== 'number') throw new UseCaseError('PendingDeliveryNotes must be a number')
+        if (typeof n !== 'number') 
+            throw new ValidationError('PendingDeliveryNotes must be a number')
         this.activeProjects = n
         return this
     }

@@ -7,12 +7,10 @@ const update = require('../use_cases/project/update')
 const remove = require('../use_cases/project/remove')
 const getArchived = require('../use_cases/project/getArchived')
 
-
 const router = new Router()
 
-
 router.post('/', async (req, res, next) => {
-    await create(req.body).then(r => res.status(201).json(r)).catch(e => next(e))
+    await create(req).then(r => res.status(201).json(r)).catch(e => next(e))
 })
 
 router.get('/', async (req, res, next) => {
