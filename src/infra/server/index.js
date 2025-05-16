@@ -6,6 +6,7 @@ const userRouter = require("../../routes/user")
 const companyRouter = require('../../routes/company')
 const clientRouter = require('../../routes/client')
 const projectRouter = require('../../routes/project')
+const deliveryNoteRouter = require('../../routes/deliveryNote')
 
 
 function startServer(app, port) {
@@ -18,11 +19,15 @@ function startServer(app, port) {
 
 function start() {
     const app = express()
+
     configureMiddlewares(app)
+
     app.use("/api/user", userRouter) 
     app.use('/api/company', companyRouter)
     app.use('/api/client', clientRouter)
     app.use('/api/project', projectRouter)
+    app.use('/api/deliveryNote', deliveryNoteRouter)
+
     app.use(errorHandlerMiddleware) 
 
     const server = startServer(app, process.env.PORT)

@@ -170,6 +170,11 @@ class Project {
         return this
     }
 
+    isActive() {
+        if (!this.end) return true
+        return new Date() < new Date(this.end)
+    }
+
     masked() {
         const keys = Object.keys(this).filter(k => this[k] === null)
         keys.forEach(k => delete this[k])

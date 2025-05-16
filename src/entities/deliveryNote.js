@@ -80,6 +80,11 @@ class DeliveryNote {
         this.projectId = id
         return this
     }
+
+    isPending() {
+        if (!this.pending) return false
+        return this.pending
+    }
 }
 
 

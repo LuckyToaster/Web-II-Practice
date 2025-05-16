@@ -1,6 +1,7 @@
-const { NotFoundError, UnauthorizedError } = require('../infra/errors')
+const { NotFoundError, UnauthorizedError, ValidationError } = require('../infra/errors')
 const User = require('../entities/user')
-const { userDAO } = require('../dao')
+const Client = require('../entities/client')
+const { userDAO, projectDAO, deliveryNoteDAO } = require('../dao')
 
 
 function getTokenFromAuthHeader(req) {
@@ -30,4 +31,20 @@ async function getUserByEmail(email) {
 }
 
 
-module.exports = { getTokenFromAuthHeader, getUserByJwt, getUserByEmail }
+async function getProjects(obj) {
+    if (!obj.userId && !obj.clientId) throw new ValidationError(`Obj must contain either a 'userId' or a 'clientId'`)
+    const projects = await projectDAO.get(obj)
+    if (!projects) throw NotFoundError(`No projects were found using the following query: ${obj}`)
+    return projects
+}
+
+async function getDeliveryNotes(obj) {
+    if (!obj.userId && !obj.clientId && !obj.projectId) 
+        throw new ValidationError(`Obj must contain either a 'userId', 'clientId' or 'projectId' field`)
+    const deliveryNotes = await deliveryNoteDAO.get(obj)
+    if (!deliveryNotes) throw NotFoundError(`No deliveryNOtes were found using the following query: ${obj}`)
+    return deliveryNotes
+}
+
+
+module.exports = { getTokenFromAuthHeader, getUserByJwt, getUserByEmail, getProjects, getDeliveryNotes }

@@ -38,12 +38,6 @@ class Client {
         if (obj.logo) this.setLogo(obj.logo)
         else this.logo = null
 
-        if (obj.activeProjects) this.setActiveProjects(obj.activeProjects)
-        else this.activeProjects = null
-
-        if (obj.pendingDeliveryNotes) this.setPendingDeliveryNotes(obj.pendingDeliveryNotes)
-        else this.pendingDeliveryNotes = null
-
         if (obj.deleted) this.#setDeleted(obj.deleted)
         else this.deleted = null
 
@@ -139,20 +133,6 @@ class Client {
         if (logo.length > 256) 
             throw new ValidationError('Logo path must be less than 256 characters')
         this.logo = logo
-        return this
-    }
-
-    setActiveProjects(n) {
-        if (typeof n !== 'number') 
-            throw new ValidationError('ActiveProjects must be a number')
-        this.activeProjects = n
-        return this
-    }
-
-    setPendingDeliveryNotes(n) {
-        if (typeof n !== 'number') 
-            throw new ValidationError('PendingDeliveryNotes must be a number')
-        this.activeProjects = n
         return this
     }
 }

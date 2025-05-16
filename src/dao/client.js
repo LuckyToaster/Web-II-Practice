@@ -29,9 +29,6 @@ class ClientDAO extends SuperDAO {
                 deleted bool,
                 logo varchar(256),
 
-                activeProjects int,
-                pendingDeliveryNotes int,
-
                 createdAt timestamp DEFAULT CURRENT_TIMESTAMP,
                 updatedAt timestamp DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
                 foreign key (userId) references user(id) on delete set null on update cascade,
