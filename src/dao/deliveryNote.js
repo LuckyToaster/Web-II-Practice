@@ -25,6 +25,7 @@ class DeliveryNoteDAO extends SuperDAO {
                 units int,
                 description varchar(256),
                 pending bool,
+                signaturePath varchar(256)
 
                 createdAt timestamp DEFAULT CURRENT_TIMESTAMP,
                 updatedAt timestamp DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,

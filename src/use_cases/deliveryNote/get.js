@@ -9,8 +9,7 @@ async function get(req) {
     const token = getTokenFromAuthHeader(req) 
     await getUserByJwt(token)
 
-    const deliveryNote =  await projectDAO.get({ id: req.params.id })
-
+    const deliveryNote =  await deliveryNoteDAO.get({ id: req.params.id })
     const result = { deliveryNote }
     if (deliveryNote.userId) result.user = await userDAO.get({ id: deliveryNote.userId })
     if (deliveryNote.clientId) result.client = await clientDAO.get({ id: deliveryNote.clientId })

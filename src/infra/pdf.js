@@ -1,4 +1,3 @@
-const fs = require("fs");
 const PDFDocument = require("pdfkit");
 
 const generateFooter = (doc) => doc.fontSize(10).text("Delivery Note Invoice Generated with PDFKit", 50, 780, { align: "center", width: 500 })
@@ -8,20 +7,26 @@ const addSignature = (doc, obj) => doc.moveDown().image(obj.signature, (doc.page
 
 
 function generatePDF(obj, path) {
-    let doc = new PDFDocument({ size: "A4", margin: 50 })
-    doc.lineGap(5)
-    generateHeader(doc)
-    generateUserInfo(doc, obj)
-    generateClientInfo(doc, obj)
-    generateProjectInfo(doc, obj)
-    generateDeliveryNoteInfo(doc, obj)
+    return new Promise((resolve, reject) => {
+        let doc = new PDFDocument({ size: "A4", margin: 50 })
+        doc.lineGap(5)
+        generateHeader(doc)
+        generateUserInfo(doc, obj)
+        generateClientInfo(doc, obj)
+        generateProjectInfo(doc, obj)
+        generateDeliveryNoteInfo(doc, obj)
+        if (obj.signature) addSignature(doc, obj)
+        generateFooter(doc)
 
-    console.log(fs.existsSync(obj.signature));
-    if (obj.signature) addSignature(doc, obj)
-
-    generateFooter(doc)
-    doc.end()
-    doc.pipe(fs.createWriteStream(path))
+        const buffers = []
+        doc.on('data', buffers.push.bind(buffers))
+        doc.on('error', (err) => reject(err))
+        doc.on('end', () => {
+            const pdfData = Buffer.concat(buffers);
+            resolve(pdfData)
+        })
+        doc.end()
+    })
 }
 
 

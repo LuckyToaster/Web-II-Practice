@@ -28,6 +28,9 @@ class DeliveryNote {
         if (obj.pending) this.setPending(obj.pending)
         else this.pending = null
 
+        if (obj.signaturePath) this.setSignaturePath(obj.signaturePath)
+        else this.signaturePath = null
+
         this.id = obj.id??  null 
         this.createdAt = obj.createdAt ?? null
         this.updatedAt = obj.updatedAt ?? null
@@ -81,9 +84,20 @@ class DeliveryNote {
         return this
     }
 
+    setSignaturePath(path) {
+        if (typeof path !== 'string' || path.length < 5 || path.length > 256)
+            throw new ValidationError('SignaturePath must be a string of length between 5 and 256 characters')
+        this.signaturePath = path
+        return this
+    }
+
     isPending() {
         if (!this.pending) return false
         return this.pending
+    }
+
+    isSigned() {
+        return this.signaturePath && typeof this.signaturePath === 'string'
     }
 }
 

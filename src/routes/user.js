@@ -1,6 +1,5 @@
 const { Router } = require("express")
 const multer = require('multer')
-const { join } = require('path')
 
 const register = require('../use_cases/user/register')
 const validate = require('../use_cases/user/validate')
@@ -66,6 +65,9 @@ router.put('/password_reset', async (req, res, next) => {
 })
 
 router.patch('/pfp', upload.single('pfp'), async (req, res, next) => {
+    const mimes = [ 'image/jpeg', 'image/png', 'image/webp' ]
+    if (!mimes.includes(req.file.mimetype)) 
+        res.status(415).send(`${req.file.mimetype} not supported (please give one of ${mimes}`)
     await pfp(req).then(_ => res.status(201).send()).catch(e => next(e))
 })
 

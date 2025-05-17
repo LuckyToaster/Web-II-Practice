@@ -1,5 +1,5 @@
 const { getTokenFromAuthHeader, getUserByJwt } = require('../helpers')
-const { ConflictError } = require('../../infra/errors')
+const { ConflictError, ValidationError } = require('../../infra/errors')
 const { projectDAO } = require('../../dao')
 
 
