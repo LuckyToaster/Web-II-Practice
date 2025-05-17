@@ -9,10 +9,9 @@ class UserDAO extends SuperDAO {
         super()
         if (UserDAO._instance) throw new Error('UserDAO is a singleton')
         UserDAO._instance = this
-        this.#createTableIfNotExists()
     }
 
-    async #createTableIfNotExists() {
+    async createTableIfNotExists() {
         await DB.query(
             `CREATE TABLE IF NOT EXISTS user (
                 id int auto_increment primary key, 

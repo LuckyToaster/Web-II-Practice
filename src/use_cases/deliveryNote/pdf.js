@@ -15,6 +15,7 @@ async function pdf(req) {
     if (deliveryNote.userId) obj.user = await userDAO.get({ id: deliveryNote.userId })
     if (deliveryNote.clientId) obj.client = await clientDAO.get({ id: deliveryNote.clientId })
     if (deliveryNote.projectId) obj.project = await projectDAO.get({ id: deliveryNote.projectId })
+    if (deliveryNote.isSigned()) obj.signature = deliveryNote.signaturePath
 
     const bufferData = await generatePDF(obj)
     if (!bufferData) throw new InternalServerError(`Couldn't generate pdf`)

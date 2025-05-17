@@ -10,10 +10,9 @@ class DeliveryNoteDAO extends SuperDAO {
         if (DeliveryNoteDAO._instance) 
             throw new Error('DeliveryNoteDAO is a singleton')
         DeliveryNoteDAO._instance = this
-        this.#createTableIfNotExists()
     }
 
-    async #createTableIfNotExists() {
+    async createTableIfNotExists() {
         await DB.query(
             `CREATE TABLE IF NOT EXISTS deliveryNote (
                 id int auto_increment primary key, 
@@ -25,7 +24,7 @@ class DeliveryNoteDAO extends SuperDAO {
                 units int,
                 description varchar(256),
                 pending bool,
-                signaturePath varchar(256)
+                signaturePath varchar(256),
 
                 createdAt timestamp DEFAULT CURRENT_TIMESTAMP,
                 updatedAt timestamp DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,

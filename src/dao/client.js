@@ -10,10 +10,9 @@ class ClientDAO extends SuperDAO {
         if (ClientDAO._instance) 
             throw new Error('ClientDAO is a singleton')
         ClientDAO._instance = this
-        this.#createTableIfNotExists()
     }
 
-    async #createTableIfNotExists() {
+    async createTableIfNotExists() {
         await DB.query(
             `CREATE TABLE IF NOT EXISTS client (
                 id int auto_increment primary key, 

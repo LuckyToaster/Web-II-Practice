@@ -10,10 +10,9 @@ class CompanyDAO extends SuperDAO {
         if (CompanyDAO._instance) 
             throw new Error('CompanyDAO is a singleton')
         CompanyDAO._instance = this
-        this.#createTableIfNotExists()
     }
 
-    async #createTableIfNotExists() {
+    async createTableIfNotExists() {
         await DB.query(
             `CREATE TABLE IF NOT EXISTS company (
                 id int auto_increment primary key, 

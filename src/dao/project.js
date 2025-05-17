@@ -10,10 +10,9 @@ class ProjectDAO extends SuperDAO {
         if (ProjectDAO._instance) 
             throw new Error('ProjectDAO is a singleton')
         ProjectDAO._instance = this
-        this.#createTableIfNotExists()
     }
 
-    async #createTableIfNotExists() {
+    async createTableIfNotExists() {
         await DB.query(
             `CREATE TABLE IF NOT EXISTS project (
                 id int auto_increment primary key, 
